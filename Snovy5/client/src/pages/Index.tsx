@@ -15,8 +15,8 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { products, categories } from "@/data/products";
 
 const HomePage = () => {
-  const featuredProducts = products.slice(0, 4);
-  const newArrivals = products.slice(4, 8);
+  const featuredProducts = products.slice(0, 6);
+  const newArrivals = products.slice(2, 8);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useScrollAnimation({ y: 100 });
@@ -134,8 +134,8 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-3 lg:grid-rows-1 gap-4 sm:gap-8">
-              {categories.slice(0, 3).map((category) => (
+            {/* <div className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-3 lg:grid-rows-1 gap-4 sm:gap-8">
+              {categories.slice(0, 9).map((category) => (
                 <Link
                   to="/shop"
                   key={category.id}
@@ -153,7 +153,30 @@ const HomePage = () => {
                   </div>
                 </Link>
               ))}
-            </div>
+            </div> */}
+            <div className="relative h-[200%] max-h-[calc(2*theme(spacing.64))] overflow-y-scroll scrollbar-hide">
+  <div className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-3 lg:grid-rows-1 gap-4 sm:gap-8">
+    {categories.slice(0, 9).map((category) => (
+      <Link
+        to="/shop"
+        key={category.id}
+        className="group relative overflow-hidden aspect-square rounded-lg"
+      >
+        <img
+          src={category.image}
+          alt={category.name}
+          className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center p-4 sm:p-6">
+          <h3 className="text-white text-lg sm:text-xl md:text-2xl font-serif text-center">
+            {category.name}
+          </h3>
+        </div>
+      </Link>
+    ))}
+  </div>
+</div>
+
           </div>
         </section>
 
@@ -176,11 +199,19 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
-            </div>
+            </div> */}
+
+            <div className="featured-container">
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    {featuredProducts.map((product) => (
+      <ProductCard key={product.id} product={product} />
+    ))}
+  </div>
+</div>
           </div>
         </section>
 
@@ -203,11 +234,21 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* <div className="Arrivals grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {newArrivals.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
-            </div>
+            </div> */}
+
+              <div className="arrival-wrapper">
+  <div className="Arrivals grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    {newArrivals.map((product) => (
+      <ProductCard key={product.id} product={product} />
+    ))}
+  </div>
+</div>
+
+
           </div>
         </section>
 

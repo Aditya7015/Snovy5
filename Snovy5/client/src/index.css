@@ -5,6 +5,31 @@
 @tailwind components;
 @tailwind utilities;
 
+.featured-container{
+  height: calc(2 * 350px); /* 250px = your ProductCard height */
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+
+.featured-container::-webkit-scrollbar {
+  display: none; /* Chrome / Edge */
+}
+
+.arrival-wrapper {
+  /* Adjust this to your ProductCard height! */
+  --card-height: 350px; 
+
+  height: calc(var(--card-height) * 2);
+  overflow-y: scroll;
+
+  scrollbar-width: none; /* Firefox */
+}
+
+.arrival-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Edge */
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

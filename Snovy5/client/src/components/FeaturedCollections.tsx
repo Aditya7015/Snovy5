@@ -21,6 +21,24 @@ const collections = [
     description: "Comfortable and chic",
     image: "https://images.unsplash.com/photo-1534349762230-e0887830159b?q=80&w=1500",
   },
+  {
+    id: 4,
+    name: "Casual Edit",
+    description: "Effortless everyday style",
+    image: "https://images.unsplash.com/photo-1576995853123-5a10305d9340?q=80&w=1500",
+  },
+  {
+    id: 5,
+    name: "Modern Workwear",
+    description: "Elevate your office look",
+    image: "https://images.unsplash.com/photo-1591047139829-d91620643734?q=80&w=1500",
+  },
+  {
+    id: 6,
+    name: "Weekend Getaway",
+    description: "Comfortable and chic",
+    image: "https://images.unsplash.com/photo-1534349762230-e0887830159b?q=80&w=1500",
+  },
 ];
 
 const FeaturedCollections = () => {
@@ -39,7 +57,7 @@ const FeaturedCollections = () => {
             <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
+        {/* <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
           {collections.map((collection) => (
             <Link
               key={collection.id}
@@ -61,7 +79,45 @@ const FeaturedCollections = () => {
               </div>
             </Link>
           ))}
+        </div> */}
+
+        <div 
+  className="
+    grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8
+    
+    /* Height: Adjust these values to match exactly '2 rows' of your images */
+    h-[500px] sm:h-[600px] md:h-[800px] 
+    
+    /* Vertical Scrolling */
+    overflow-y-auto 
+    
+    /* Hide Scrollbar */
+    [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+  "
+>
+  {collections.map((collection) => (
+    <Link
+      key={collection.id}
+      to="/shop"
+      // Added shrink-0 to prevent compression issues in some flex contexts, though fine in grid
+      className="group relative overflow-hidden aspect-[4/5] rounded-lg w-full"
+    >
+      <img
+        src={collection.image}
+        alt={collection.name}
+        className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-3 sm:p-6 text-white">
+        <h3 className="text-lg sm:text-2xl font-serif mb-1 sm:mb-2">{collection.name}</h3>
+        <p className="text-white/80 text-sm sm:text-base mb-2 sm:mb-4 line-clamp-2">{collection.description}</p>
+        <div className="flex items-center text-xs sm:text-sm font-medium opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all">
+          Explore Style
+          <ArrowRight size={12} className="ml-2" />
         </div>
+      </div>
+    </Link>
+  ))}
+</div>
       </div>
     </section>
   );
