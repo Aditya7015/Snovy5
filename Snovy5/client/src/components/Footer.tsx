@@ -8,15 +8,16 @@ const Footer = () => {
         {/* Newsletter Section */}
         <div className="mb-12 max-w-lg mx-auto text-center">
           <h3 className="text-2xl font-serif mb-3">
-            Subscribe to our newsletter
+            Join the Snovy5 Community
           </h3>
           <p className="text-muted-foreground mb-6">
-            Stay updated with our latest collections and exclusive offers.
+            Be the first to know about new drops, exclusive deals, and limited-edition Snovy5 pieces.
           </p>
+
           <div className="flex">
             <input
               type="email"
-              placeholder="Your email address"
+              placeholder="Enter your email"
               className="flex-1 py-3 px-4 border border-r-0 rounded-l-md focus:outline-none"
             />
             <button
@@ -25,8 +26,7 @@ const Footer = () => {
               className="bg-primary text-white px-4 rounded-r-md flex items-center"
               onClick={(e) => {
                 e.preventDefault();
-                const input = e.currentTarget
-                  .previousElementSibling as HTMLInputElement;
+                const input = e.currentTarget.previousElementSibling as HTMLInputElement;
                 if (input) {
                   input.value = "";
                   const parentDiv = input.parentElement;
@@ -50,16 +50,18 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About Column */}
           <div>
-            <h4 className="font-serif text-lg mb-4">Snoovy</h4>
+            <h4 className="font-serif text-lg mb-4">Snovy5</h4>
             <p className="text-muted-foreground text-sm">
-              A curated collection of modern classics and timeless pieces
-              designed to elevate your personal style.
+              Premium streetwear crafted for modern individuality.  
+              Minimal, bold, and made to elevate your everyday style.
             </p>
+
             <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <p>GCET, Greater Noida</p>
-              <p>Phone: +91 7777048666</p>
-              <p>Email: nk10nikhil@gmail.com</p>
+              <p>Greater Noida, Uttar Pradesh</p>
+              <p>Phone: +91 98765 43210</p> {/* Dummy number */}
+              <p>Email: support@snovy5.com</p> {/* Dummy email */}
             </div>
+
             <div className="mt-4 flex space-x-4">
               <a href="#" className="hover:text-primary" aria-label="Facebook">
                 <Facebook size={18} />
@@ -78,27 +80,18 @@ const Footer = () => {
             <h4 className="font-medium mb-4">Shop</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
-                  to="/shop"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  New Arrivals
+                <Link to="/shop" className="text-muted-foreground hover:text-primary">
+                  New Drops
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/shop"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  Bestsellers
+                <Link to="/shop" className="text-muted-foreground hover:text-primary">
+                  Oversized Tees
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/shop"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  Sale
+                <Link to="/shop" className="text-muted-foreground hover:text-primary">
+                  Streetwear Essentials
                 </Link>
               </li>
             </ul>
@@ -109,34 +102,22 @@ const Footer = () => {
             <h4 className="font-medium mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
-                  to="/contact"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/contact" className="text-muted-foreground hover:text-primary">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/#"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/#" className="text-muted-foreground hover:text-primary">
                   Shipping & Returns
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/#"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/#" className="text-muted-foreground hover:text-primary">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/#"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/#" className="text-muted-foreground hover:text-primary">
                   Size Guide
                 </Link>
               </li>
@@ -148,34 +129,22 @@ const Footer = () => {
             <h4 className="font-medium mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
-                  to="/about"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  Our Story
+                <Link to="/about" className="text-muted-foreground hover:text-primary">
+                  About Snovy5
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/#"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/#" className="text-muted-foreground hover:text-primary">
                   Sustainability
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/#"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/#" className="text-muted-foreground hover:text-primary">
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/#"
-                  className="text-muted-foreground hover:text-primary"
-                >
+                <Link to="/#" className="text-muted-foreground hover:text-primary">
                   Privacy Policy
                 </Link>
               </li>
@@ -183,8 +152,10 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Bottom Bar */}
         <div className="border-t mt-16 pt-8 text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} Snoovy. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Snovy5. All rights reserved.</p>
+
           <div className="mt-4 md:mt-0 flex gap-2">
             <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
               VISA
