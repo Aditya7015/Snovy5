@@ -105,10 +105,10 @@ const HomePage = () => {
         </section>
 
         {/* Values Section */}
-        <Values />
+        {/* <Values /> */}
 
         {/* Why Choose Us Section */}
-        <WhyChooseUs />
+        {/* <WhyChooseUs /> */}
 
         {/* Featured Collections */}
         <div ref={useScrollAnimation({ y: 100, delay: 0.2 })}>
@@ -184,10 +184,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <div ref={useScrollAnimation({ scale: 0.9, delay: 0.2 })}>
-          <Testimonials />
-        </div>
+       
 
         {/* New Arrivals */}
         <section ref={newArrivalsRef} className="py-20">
@@ -215,12 +212,17 @@ const HomePage = () => {
         </section>
 
         {/* Newsletter Section */}
-        <div ref={useScrollAnimation({ y: 50, delay: 0.3 })}>
+        {/* <div ref={useScrollAnimation({ y: 50, delay: 0.3 })}>
           <Newsletter />
+        </div> */}
+
+         {/* Testimonials Section */}
+        <div ref={useScrollAnimation({ scale: 0.9, delay: 0.2 })}>
+          <Testimonials />
         </div>
 
         {/* About Section */}
-        <section ref={aboutRef} className="py-20 bg-neutral-100">
+        {/* <section ref={aboutRef} className="py-20 bg-neutral-100">
           <div className="container-custom">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
               <div>
@@ -246,10 +248,10 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Instagram Section */}
-        <section
+        {/* <section
           className="py-20"
           ref={useScrollAnimation({ opacity: 0, delay: 0.2 })}
         >
@@ -420,7 +422,7 @@ const HomePage = () => {
               </div>
             </a>
           </div>
-        </section>
+        </section> */}
       </main>
 
       <Footer />

@@ -66,7 +66,7 @@ const Testimonials = () => {
         <h2 className="text-3xl md:text-4xl font-serif text-center mb-12">
           What Our Customers Say
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
@@ -86,7 +86,38 @@ const Testimonials = () => {
               </p>
             </div>
           ))}
-        </div>
+        </div> */}
+
+        <div 
+  className="flex overflow-x-auto gap-6 pb-4 w-full snap-x snap-mandatory scroll-smooth 
+  px-4 md:px-0 
+  [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+>
+  {testimonials.map((testimonial) => (
+    <div
+      key={testimonial.id}
+      className="
+        flex-shrink-0 snap-center 
+        w-[85vw] sm:w-[350px] md:w-[400px] 
+        text-center bg-secondary p-6 rounded-lg 
+        transform transition-transform duration-300
+      "
+    >
+      <img
+        src={testimonial.image}
+        alt={testimonial.name}
+        className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+      />
+      <p className="text-muted-foreground mb-4">
+        {testimonial.content}
+      </p>
+      <h3 className="font-medium">{testimonial.name}</h3>
+      <p className="text-sm text-muted-foreground">
+        {testimonial.role}
+      </p>
+    </div>
+  ))}
+</div>
       </div>
     </section>
   );
