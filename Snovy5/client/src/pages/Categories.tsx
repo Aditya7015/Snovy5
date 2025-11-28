@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { categories } from "@/data/products";
 import { Tags } from "lucide-react";
-
+//dssasa
 const Categories = () => {
   return (
     <div className="flex flex-col min-h-screen">
