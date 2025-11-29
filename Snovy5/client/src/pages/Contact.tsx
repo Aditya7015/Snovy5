@@ -163,7 +163,7 @@ const Contact = () => {
                     <div>
                       <h3 className="font-medium mb-2">Email</h3>
                       <p className="text-muted-foreground">
-                        nk10nikhil@gmail.com
+                        snovy589@gmail.com
                       </p>
                     </div>
                   </div>
@@ -204,12 +204,12 @@ const Contact = () => {
           </div>
         </section>
 
-        {/* Map Section */}
+        {/* Map Section
         <section className="h-[400px] bg-neutral-100 relative">
           <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
             Map Placeholder - Google Map would be integrated here
           </div>
-        </section>
+        </section> */}
 
         {/* FAQ Section */}
         <section className="py-20">

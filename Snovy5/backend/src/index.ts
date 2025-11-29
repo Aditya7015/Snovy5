@@ -46,10 +46,19 @@ dotenv.config();
 connectDB();
 
 const app = express();
+// app.use(cors({
+//   origin: "http://localhost:5173",
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "http://localhost:8080",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -57,9 +66,9 @@ app.use(cookieParser());
 
 app.use("/user",router);
 
-// app.get("/", (req: Request, res: Response) => {
-//   res.send("Snovy API Running");
-// });
+app.get("/", (req: Request, res: Response) => {
+  res.send("Snovy API Running");
+});
 
 
 const PORT = process.env.PORT || 5000;
