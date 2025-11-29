@@ -7,37 +7,37 @@ const collections = [
     id: 1,
     name: "Casual Edit",
     description: "Effortless everyday style",
-    image: "https://images.unsplash.com/photo-1576995853123-5a10305d9340?q=80&w=1500",
+    image: "https://res.cloudinary.com/defv2u4ay/image/upload/v1764415895/9586804_otx0tp.jpg",
   },
   {
     id: 2,
     name: "Modern Workwear",
     description: "Elevate your office look",
-    image: "https://images.unsplash.com/photo-1591047139829-d91620643734?q=80&w=1500",
+    image: "https://res.cloudinary.com/defv2u4ay/image/upload/v1764415746/9549329_idyiyd.jpg",
   },
   {
     id: 3,
     name: "Weekend Getaway",
     description: "Comfortable and chic",
-    image: "https://images.unsplash.com/photo-1534349762230-e0887830159b?q=80&w=1500",
+    image: "https://res.cloudinary.com/defv2u4ay/image/upload/v1764416072/9834242_sbpidz.jpg",
   },
   {
     id: 4,
     name: "Casual Edit",
     description: "Effortless everyday style",
-    image: "https://images.unsplash.com/photo-1576995853123-5a10305d9340?q=80&w=1500",
+    image: "https://res.cloudinary.com/defv2u4ay/image/upload/v1764416151/70262200_9704568_ak7egm.jpg",
   },
   {
     id: 5,
     name: "Modern Workwear",
     description: "Elevate your office look",
-    image: "https://images.unsplash.com/photo-1591047139829-d91620643734?q=80&w=1500",
+    image: "https://res.cloudinary.com/defv2u4ay/image/upload/v1764415935/9587100_vvz9cp.jpg",
   },
   {
     id: 6,
     name: "Weekend Getaway",
     description: "Comfortable and chic",
-    image: "https://images.unsplash.com/photo-1534349762230-e0887830159b?q=80&w=1500",
+    image: "https://res.cloudinary.com/defv2u4ay/image/upload/v1764416119/10251693_awxu9p.jpg",
   },
 ];
 
