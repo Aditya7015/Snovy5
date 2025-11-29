@@ -12,120 +12,121 @@ import { Product } from "@/context/CartContext";
 
 const AdminAddProduct = () => {
   const { addProduct } = useAdminProducts();
+
   const [form, setForm] = useState({
     name: "",
     price: "",
-    image: "",
     category: "",
     description: "",
   });
 
-  const handleChange = (
+  const [files, setFiles] = useState<File[]>([]);
+
+  const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files || []);
+    if (selected.length > 5) {
+      toast.error("You can upload a maximum of 5 images!");
+      return;
+    }
+    setFiles(selected);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    if (!form.name || !form.category || !form.price || !form.image) {
-      toast.error("Please fill all required fields");
+    if (!form.name || !form.price || !form.category || files.length === 0) {
+      toast.error("Fill all fields & upload images.");
       return;
     }
 
     addProduct({
       name: form.name,
-      category: form.category,
-      image: form.image,
-      description: form.description || "No description provided.",
       price: Number(form.price),
+      category: form.category,
+      description: form.description || "No description provided",
+      image: URL.createObjectURL(files[0]), // only saving first image for now
     });
 
-    toast.success("Product added to admin inventory");
-    setForm({
-      name: "",
-      price: "",
-      image: "",
-      category: "",
-      description: "",
-    });
+    toast.success("Product Added!");
+
+    setForm({ name: "", price: "", category: "", description: "" });
+    setFiles([]);
   };
 
   const previewProduct: Product | null =
-    form.name && form.image && form.price
-      ? {
+    form.name && files.length > 0 && form.price
+      ? ({
           id: "preview",
           name: form.name,
-          price: Number(form.price || 0),
-          image: form.image,
-          category: form.category || "Preview",
-          description: form.description || "Preview description",
-        }
+          price: Number(form.price),
+          image: URL.createObjectURL(files[0]),
+          category: form.category,
+          description: form.description,
+          previewImages: files.map((file) => URL.createObjectURL(file)),
+        } as any)
       : null;
 
   return (
     <div className="grid gap-6 md:grid-cols-[1.1fr,0.9fr]">
-      <Card className="p-4 md:p-6 shadow-sm">
+      <Card className="p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Add New Product</h2>
+
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-1">
-            <Label htmlFor="name">Product Name</Label>
-            <Input
-              id="name"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
+          <div>
+            <Label>Product Name</Label>
+            <Input name="name" value={form.name} onChange={handleTextChange} />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="category">Category</Label>
+          <div>
+            <Label>Category</Label>
             <Input
-              id="category"
               name="category"
               value={form.category}
-              onChange={handleChange}
-              placeholder="e.g. Oversized Tee"
-              required
+              onChange={handleTextChange}
             />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="price">Price (₹)</Label>
+          <div>
+            <Label>Price (₹)</Label>
             <Input
-              id="price"
               name="price"
               type="number"
-              step="0.01"
               value={form.price}
-              onChange={handleChange}
-              required
+              onChange={handleTextChange}
             />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="image">Image URL</Label>
-            <Input
-              id="image"
-              name="image"
-              value={form.image}
-              onChange={handleChange}
-              required
-            />
+          <div>
+            <Label>Upload Images (Max 5)</Label>
+            <Input type="file" accept="image/*" multiple onChange={handleFileChange} />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="description">Description</Label>
+          {/* Thumbnails */}
+          {files.length > 0 && (
+            <div className="flex gap-2 flex-wrap p-1">
+              {files.map((file, index) => (
+                <img
+                  key={index}
+                  src={URL.createObjectURL(file)}
+                  className="w-20 h-20 rounded object-cover border"
+                />
+              ))}
+            </div>
+          )}
+
+          <div>
+            <Label>Description</Label>
             <Textarea
-              id="description"
               name="description"
               value={form.description}
-              onChange={handleChange}
               rows={4}
-              placeholder="Describe the product..."
+              onChange={handleTextChange}
             />
           </div>
 
@@ -135,23 +136,16 @@ const AdminAddProduct = () => {
         </form>
       </Card>
 
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-muted-foreground">
-          Live Preview
-        </h3>
-        <Card className="p-4 flex items-center justify-center min-h-[280px]">
-          {previewProduct ? (
-            <div className="max-w-xs w-full">
-              <ProductCard product={previewProduct} />
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground text-center">
-              Fill the form to preview how the product will look on the
-              storefront.
-            </p>
-          )}
-        </Card>
-      </div>
+      {/* Live Preview */}
+      <Card className="p-4 flex items-center justify-center min-h-[280px]">
+        {previewProduct ? (
+          <ProductCard product={previewProduct} />
+        ) : (
+          <p className="text-xs text-muted-foreground text-center">
+            Fill form & upload images to preview here
+          </p>
+        )}
+      </Card>
     </div>
   );
 };
