@@ -41,6 +41,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db";
 import router from "./routes/auth.routes";
+import productRouter from "./routes/product.routes";
 
 dotenv.config();
 connectDB();
@@ -65,6 +66,7 @@ app.use(cookieParser());
 // Routes Coming Soon...
 
 app.use("/user",router);
+app.use("/admin",productRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Snovy API Running");
