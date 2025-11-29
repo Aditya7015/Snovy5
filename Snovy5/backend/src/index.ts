@@ -39,7 +39,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { connectDB } from "./config/db.js";
+import { connectDB } from "./config/db";
 
 dotenv.config();
 connectDB();
