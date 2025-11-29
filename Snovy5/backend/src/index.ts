@@ -40,6 +40,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db";
+import router from "./routes/auth.routes";
 
 dotenv.config();
 connectDB();
@@ -53,9 +54,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes Coming Soon...
-app.get("/", (req: Request, res: Response) => {
-  res.send("Snovy API Running");
-});
+
+app.use("/user",router);
+
+// app.get("/", (req: Request, res: Response) => {
+//   res.send("Snovy API Running");
+// });
 
 
 const PORT = process.env.PORT || 5000;
