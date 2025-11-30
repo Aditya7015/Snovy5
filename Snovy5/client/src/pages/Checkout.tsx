@@ -365,7 +365,7 @@ const Checkout = () => {
               </div>
 
               {/* PAYMENT */}
-              <div>
+              {/* <div>
                 <h2 className="text-xl font-medium mb-6">Payment Method</h2>
 
                 <RadioGroup
@@ -422,7 +422,28 @@ const Checkout = () => {
                   </div>
                 )}
               </div>
+            </div> */}
+
+            {/* PAYMENT ONLY COD */}
+            <div>
+              <h2 className="text-xl font-medium mb-6">Payment Method</h2>
+
+              <RadioGroup
+                defaultValue="cod"
+                onValueChange={handlePaymentMethodChange}
+              >
+                <div className="flex items-center space-x-2 border rounded p-4">
+                  <RadioGroupItem value="cod" />
+                  <Label className="flex-grow">Cash on Delivery (COD)</Label>
+                </div>
+
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Online payment will be available soon.
+                </p>
+              </RadioGroup>
+
             </div>
+          </div>
 
             {/* RIGHT SIDE - ORDER SUMMARY */}
             <div>

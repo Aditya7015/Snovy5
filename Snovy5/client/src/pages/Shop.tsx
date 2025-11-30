@@ -31,13 +31,9 @@ const Shop = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [sortBy, setSortBy] = useState("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-
-  // Prevent URL category being applied twice
   const [urlCategoryLoaded, setUrlCategoryLoaded] = useState(false);
 
-  // -----------------------
-  // 1) Load all products
-  // -----------------------
+  // Fetch products once
   useEffect(() => {
     async function load() {
       try {
@@ -52,12 +48,9 @@ const Shop = () => {
     load();
   }, []);
 
-  // -----------------------
-  // 2) Apply category from URL (initial load)
-  // -----------------------
+  // Preselect category from URL
   useEffect(() => {
     if (urlCategoryLoaded) return;
-
     const categoryParam = searchParams.get("category");
     if (categoryParam) {
       setSelectedCategories([categoryParam]);
@@ -65,35 +58,28 @@ const Shop = () => {
     }
   }, [searchParams, urlCategoryLoaded]);
 
-  // ---------------------------------------------------------
-  // 0) NEW FEATURE: If no params in URL → reset all checkboxes
-  // ---------------------------------------------------------
+  // Reset all filters if URL is empty
   useEffect(() => {
     if (searchParams.size === 0) {
-      setSelectedCategories([]); // uncheck all
+      setSelectedCategories([]);
     }
   }, [searchParams]);
 
-  // -----------------------
-  // 3) Apply filters
-  // -----------------------
+  // Filtering + sorting logic
   useEffect(() => {
     let result = [...products];
 
-    // Category filter
     if (selectedCategories.length > 0) {
       result = result.filter((product) =>
         selectedCategories.includes(product.category || "")
       );
     }
 
-    // Price filter
     result = result.filter(
       (product) =>
         product.price >= priceRange[0] && product.price <= priceRange[1]
     );
 
-    // Sorting
     switch (sortBy) {
       case "price-low":
         result.sort((a, b) => a.price - b.price);
@@ -109,34 +95,26 @@ const Shop = () => {
     setFilteredProducts(result);
   }, [products, selectedCategories, priceRange, sortBy]);
 
-  // Create category list from product data
   const categories = Array.from(
     new Set(products.map((p) => p.category || "Uncategorized"))
   ).map((name, index) => ({ id: String(index), name }));
 
-  // -----------------------
-  // 4) Toggle category + update URL
-  // -----------------------
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) => {
       const updated = prev.includes(category)
         ? prev.filter((c) => c !== category)
         : [...prev, category];
 
-      // Update URL only if exactly 1 category selected
       if (updated.length === 1) {
         setSearchParams({ category: updated[0] });
       } else {
-        setSearchParams({}); // remove all params
+        setSearchParams({});
       }
 
       return updated;
     });
   };
 
-  // -----------------------
-  // 5) Clear All Filters
-  // -----------------------
   const clearFilters = () => {
     setSelectedCategories([]);
     setPriceRange([0, 5000]);
@@ -149,41 +127,55 @@ const Shop = () => {
       <Header />
 
       <main className="flex-grow">
-        <section className="bg-secondary py-16">
+        {/* Banner */}
+        <section className="bg-secondary py-14">
           <div className="container-custom">
-            <h1 className="text-4xl font-serif mb-4">Snovy5 — Shop</h1>
+            <h1 className="text-4xl font-serif font-bold mb-2">Explore T-Shirts</h1>
+            <p className="text-muted-foreground">
+              Premium Quality. Latest Trends. Best Offers.
+            </p>
           </div>
         </section>
 
+        {/* Filters + Products */}
         <section className="py-12">
           <div className="container-custom">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-              
-              {/* -----------------------
-                  LEFT SIDEBAR (Filters)
-              ------------------------ */}
-              <div className="hidden lg:block sticky top-24">
-                <h3 className="font-medium mb-6">Filters</h3>
 
-                <Accordion type="multiple" defaultValue={["categories", "price"]}>
-                  
-                  {/* Category Filter */}
+              {/* Sidebar Filters */}
+              <div className="hidden lg:block sticky top-24">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium">Filters</h3>
+                  {selectedCategories.length > 0 && (
+                    <button className="text-sm text-red-500" onClick={clearFilters}>
+                      Reset all
+                    </button>
+                  )}
+                </div>
+
+                <Accordion
+                  type="multiple"
+                  defaultValue={["categories", "price"]}
+                  className="mb-4"
+                >
                   <AccordionItem value="categories">
                     <AccordionTrigger>Categories</AccordionTrigger>
                     <AccordionContent>
                       {categories.map((c) => (
-                        <div key={c.id} className="flex items-center space-x-2 mb-2">
+                        <label
+                          key={c.id}
+                          className="flex items-center space-x-2 mb-2 cursor-pointer"
+                        >
                           <Checkbox
                             checked={selectedCategories.includes(c.name)}
                             onCheckedChange={() => toggleCategory(c.name)}
                           />
                           <span>{c.name}</span>
-                        </div>
+                        </label>
                       ))}
                     </AccordionContent>
                   </AccordionItem>
 
-                  {/* Price Filter */}
                   <AccordionItem value="price">
                     <AccordionTrigger>Price</AccordionTrigger>
                     <AccordionContent>
@@ -196,7 +188,7 @@ const Shop = () => {
                           setPriceRange(val as [number, number])
                         }
                       />
-                      <div className="flex justify-between mt-4 text-sm">
+                      <div className="flex justify-between mt-2 text-sm">
                         <span>₹{priceRange[0]}</span>
                         <span>₹{priceRange[1]}</span>
                       </div>
@@ -204,22 +196,76 @@ const Shop = () => {
                   </AccordionItem>
                 </Accordion>
 
-                <Button className="mt-6 w-full" variant="outline" onClick={clearFilters}>
+                <Button className="w-full" variant="outline" onClick={clearFilters}>
                   Clear Filters
                 </Button>
               </div>
 
-              {/* -----------------------
-                  PRODUCTS GRID
-              ------------------------ */}
-              <div className="lg:col-span-3">
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Main Product Grid */}
+              <div className="lg:col-span-3 space-y-6">
+                
+                {/* Toolbar */}
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-muted-foreground">
+                    Showing <span className="font-bold">{filteredProducts.length}</span>{" "}
+                    items
+                  </p>
+
+                  <div className="flex items-center gap-3">
+                    {/* Sorting */}
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-[160px] text-sm">
+                        <SelectValue placeholder="Sort By" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="featured">Featured</SelectItem>
+                        <SelectItem value="price-low">Price: Low → High</SelectItem>
+                        <SelectItem value="price-high">Price: High → Low</SelectItem>
+                        <SelectItem value="name">Name (A-Z)</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* View Mode */}
+                    <div className="hidden sm:flex gap-2">
+                      <Button
+                        size="icon"
+                        variant={viewMode === "grid" ? "default" : "outline"}
+                        onClick={() => setViewMode("grid")}
+                      >
+                        <GridIcon size={18} />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant={viewMode === "list" ? "default" : "outline"}
+                        onClick={() => setViewMode("list")}
+                      >
+                        <List size={18} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Products */}
+                <div
+                  className={`grid ${
+                    viewMode === "grid"
+                      ? "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3"
+                      : "grid-cols-1"
+                  } gap-6`}
+                >
                   {filteredProducts.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
                 </div>
-              </div>
 
+                {/* No Products */}
+                {filteredProducts.length === 0 && (
+                  <div className="text-center py-16 text-lg text-muted-foreground">
+                    No results found. Try removing filters.
+                  </div>
+                )}
+
+              </div>
             </div>
           </div>
         </section>

@@ -1,43 +1,51 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useOrder } from "@/context/OrderContext";
+import { useAuth } from "@/context/AuthContext";
+import { Loader2, RefreshCcw, Copy, MapPin } from "lucide-react";
+import { toast } from "sonner";
 
-const API_URL = "http://localhost:5000";
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "pending":
+      return "bg-yellow-500";
+    case "processing":
+      return "bg-blue-500";
+    case "shipped":
+      return "bg-purple-600";
+    case "delivered":
+      return "bg-green-600";
+    case "canceled":
+      return "bg-red-600";
+    default:
+      return "bg-gray-500";
+  }
+};
 
 export default function AccountOrders() {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const token = localStorage.getItem("token");
-
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch(`${API_URL}/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-      setOrders(data);
-    } catch (err) {
-      console.error("Failed to load orders", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { orders, fetchOrders, updateOrderStatus } = useOrder();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (isAuthenticated) fetchOrders();
+  }, [isAuthenticated]);
 
-  if (loading) {
+  const copyOrderId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast.success("Order ID copied!");
+  };
+
+  if (!orders) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
         <div className="container-custom py-20 flex-grow text-center">
-          Loading your orders...
+          <Loader2 className="animate-spin mx-auto" size={32} />
         </div>
         <Footer />
       </div>
@@ -50,7 +58,7 @@ export default function AccountOrders() {
         <Header />
         <div className="container-custom py-20 flex-grow text-center">
           <h2 className="text-xl font-medium mb-3">No Orders Yet</h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-4">
             Looks like you haven’t ordered anything yet.
           </p>
           <Button asChild>
@@ -67,41 +75,74 @@ export default function AccountOrders() {
       <Header />
 
       <main className="container-custom flex-grow py-10">
-        <h1 className="text-3xl font-serif mb-8">My Orders</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-serif">My Orders</h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchOrders()}
+            className="flex gap-1"
+          >
+            <RefreshCcw size={16} /> Refresh
+          </Button>
+        </div>
 
         <div className="space-y-6">
           {orders.map((order) => (
-            <Card key={order.id} className="p-6 border shadow-sm">
+            <Card
+              key={order.id}
+              className="p-6 border shadow-md hover:shadow-lg transition rounded-xl"
+            >
+              {/* Header */}
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-semibold">Order #{order.id}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {new Date(order.date).toLocaleDateString()}
+                  <p className="font-semibold text-sm">
+                    Order ID: #{order.id.slice(-8)}
                   </p>
-                  <p className="text-sm mt-2">
-                    <span className="font-medium">Status:</span>{" "}
-                    <span className="capitalize">{order.status}</span>
+                  <p className="text-xs text-muted-foreground">
+                    Ordered on{" "}
+                    {new Date(order.date).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
-                <Button asChild size="sm" variant="outline">
-                  <Link to={`/order-confirmation/${order.id}`}>
-                    View Details
-                  </Link>
-                </Button>
+
+                <div className="flex gap-2 items-center">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => copyOrderId(order.id)}
+                  >
+                    <Copy size={16} />
+                  </Button>
+
+                  <Badge
+                    className={`${getStatusColor(
+                      order.status
+                    )} text-white capitalize`}
+                  >
+                    {order.status}
+                  </Badge>
+                </div>
               </div>
 
-              {/* Items preview */}
-              <div className="flex gap-4 mt-4 overflow-x-auto">
-                {order.items.map((item: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-3 p-2 border rounded-md">
+              {/* Items List */}
+              <div className="flex gap-4 mt-6 overflow-x-auto">
+                {order.items.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 p-2 border rounded-md min-w-[200px] bg-muted"
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-12 h-12 object-cover rounded"
+                      className="w-14 h-14 object-cover rounded"
                     />
                     <div className="text-sm">
-                      <p>{item.name}</p>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">
                         {item.quantity} × ₹{item.price}
                       </p>
                     </div>
@@ -109,9 +150,41 @@ export default function AccountOrders() {
                 ))}
               </div>
 
-              <p className="font-medium text-right mt-4">
-                Total: ₹{order.total}
-              </p>
+              {/* Lower Section */}
+              <div className="flex flex-wrap justify-between mt-6 text-sm">
+
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <MapPin size={16} />
+                  <span>
+                    Deliver to: {order.shippingAddress.city},{" "}
+                    {order.shippingAddress.state}
+                  </span>
+                </div>
+
+                <p className="font-medium">
+                  Pay: ₹{order.total} • <span className="text-green-600">COD</span>
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-3 mt-6">
+                {order.status === "pending" && (
+                  <Button
+                    variant="destructive"
+                    onClick={() =>
+                      updateOrderStatus(order.id, "canceled")
+                    }
+                  >
+                    Cancel Order
+                  </Button>
+                )}
+
+                <Button variant="outline" asChild>
+                  <Link to={`/order-confirmation/${order.id}`}>
+                    Track Order
+                  </Link>
+                </Button>
+              </div>
             </Card>
           ))}
         </div>

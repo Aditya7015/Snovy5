@@ -3,12 +3,21 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { CheckCircle, Box, MapPin, Truck, Package } from "lucide-react";
 
 const API_URL = "http://localhost:5000";
 
-// helper to mirror OrderContext getToken logic
+// Same token checker used everywhere
 const getToken = () =>
   localStorage.getItem("admin_token") ?? localStorage.getItem("token");
+
+// Order status steps for timeline UI
+const STATUS_STEPS = [
+  { key: "pending", label: "Order Placed", Icon: Package },
+  { key: "processing", label: "Packed", Icon: Box },
+  { key: "shipped", label: "Shipped", Icon: Truck },
+  { key: "delivered", label: "Delivered", Icon: CheckCircle },
+];
 
 export default function OrderConfirmation() {
   const { orderId } = useParams();
@@ -20,7 +29,7 @@ export default function OrderConfirmation() {
     try {
       const token = getToken();
       if (!token) {
-        setError("You must be logged in to view this order.");
+        setError("You must be logged in to view this order");
         setLoading(false);
         return;
       }
@@ -30,17 +39,13 @@ export default function OrderConfirmation() {
       });
 
       const data = await res.json();
-
       if (!res.ok) {
-        setError(data?.error || "Failed to fetch order details");
-        setOrder(null);
+        setError(data?.error || "Failed to load order details");
       } else {
         setOrder(data);
       }
-    } catch (err) {
-      console.error("Order fetch failed", err);
-      setError("Something went wrong while loading your order.");
-      setOrder(null);
+    } catch (e) {
+      setError("Error fetching order");
     } finally {
       setLoading(false);
     }
@@ -50,178 +55,161 @@ export default function OrderConfirmation() {
     fetchOrder();
   }, []);
 
-  // Loading UI
   if (loading)
     return (
-      <div className="flex flex-col min-h-screen relative">
-        <Header />
-        <div className="text-center flex-grow py-20 text-gray-700 dark:text-gray-200 z-10 relative">
-          Loading...
-        </div>
-        <Footer />
-      </div>
+      <Page>
+        <div className="text-center py-20 text-lg">Loading your order...</div>
+      </Page>
     );
 
-  // Error or missing order
-  if (error || !order) {
+  if (error || !order)
     return (
-      <div className="flex flex-col min-h-screen relative">
-        <Header />
-        <main className="container-custom py-12 flex-grow relative z-10">
-          <div className="max-w-xl mx-auto text-center">
-            <h1 className="text-3xl font-serif font-semibold mb-4 text-red-600">
-              Oops!
-            </h1>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              {error || "We couldn&apos;t find this order."}
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Button asChild>
-                <Link to="/account/orders">View All Orders</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/shop">Back to Shop</Link>
-              </Button>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
+      <Page>
+        <div className="text-center py-20 space-y-4">
+          <h1 className="text-2xl font-semibold text-red-500">⚠ Error</h1>
+          <p>{error}</p>
+          <Button asChild>
+            <Link to="/account/orders">My Orders</Link>
+          </Button>
+        </div>
+      </Page>
     );
-  }
 
-  // Safely destructure with fallbacks
-  const shipping = order.shippingAddress || {};
-  const items = Array.isArray(order.items) ? order.items : [];
-  const status: string = order.status || "pending";
-
-  // COD-only label
-  const paymentLabel =
-    !order.paymentMethod || order.paymentMethod.toLowerCase() === "cod"
-      ? "Cash on Delivery"
-      : (order.paymentMethod as string).toUpperCase();
-
-  const dateLabel = order.date
-    ? new Date(order.date).toLocaleDateString()
-    : "N/A";
+  const shipping = order.shippingAddress;
+  const statusIndex = STATUS_STEPS.findIndex(
+    (s) => s.key.toLowerCase() === order.status.toLowerCase()
+  );
+  const dateLabel = new Date(order.date).toLocaleDateString("en-IN");
 
   return (
-    <div className="flex flex-col min-h-screen relative">
-      <Header />
+    <Page>
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-serif font-semibold">🎉 Order Confirmed</h1>
+        <p className="text-gray-600 mt-2">
+          Thank you for shopping with Snovy5!
+        </p>
+      </div>
 
-      <main className="container-custom py-12 flex-grow relative z-10">
-        {/* Confirmation Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-semibold mb-3 text-gray-900 dark:text-gray-100">
-            Order Confirmed 🎉
-          </h1>
-          <p className="text-lg text-gray-700 dark:text-gray-300">
-            Thank you! Your order has been successfully placed.
+      {/* MAIN CARD */}
+      <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg space-y-8">
+
+        {/* Top Info */}
+        <div className="flex justify-between">
+          <div>
+            <p className="text-sm font-medium">Order ID:</p>
+            <p className="font-semibold">{order.id}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Ordered on {dateLabel}
+            </p>
+          </div>
+
+          <p className="text-sm">
+            Payment: <span className="font-semibold text-green-600">COD</span>
           </p>
         </div>
 
-        {/* Order Summary Card */}
-        <div className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-8 backdrop-blur-md transition">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <div className="mb-4 md:mb-0">
-              <p className="text-gray-800 dark:text-gray-100 font-semibold text-lg">
-                Order ID: <span className="font-normal">{order.id}</span>
-              </p>
-              <p className="mt-1 text-sm">
-                Status:{" "}
-                <span
-                  className={`capitalize px-3 py-1 rounded-full text-xs font-semibold ${
-                    status === "delivered"
-                      ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                      : status === "pending"
-                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
-                      : "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
-                  }`}
-                >
-                  {status}
-                </span>
-              </p>
-            </div>
-            <div className="text-left md:text-right text-gray-700 dark:text-gray-300 text-sm">
-              <p>
-                Payment Method:{" "}
-                <span className="font-medium">{paymentLabel}</span>
-              </p>
-              <p className="mt-1">
-                Date: <span className="font-medium">{dateLabel}</span>
-              </p>
-            </div>
-          </div>
+        {/* STATUS TIMELINE */}
+        <div>
+          <h3 className="font-medium mb-3">Order Status</h3>
 
-          {/* Shipping Address */}
-          <div className="mb-6 border-t border-b border-gray-200 dark:border-gray-700 py-4">
-            <h2 className="text-gray-800 dark:text-gray-100 font-semibold mb-2">
-              Shipping Address
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 text-sm">
-              {shipping.firstName || ""} {shipping.lastName || ""}
-              <br />
-              {shipping.street || "Address not available"}
-              {shipping.city || shipping.state || shipping.postalCode ? (
-                <>
-                  , {shipping.city || ""}, {shipping.state || ""} -{" "}
-                  {shipping.postalCode || ""}
-                </>
-              ) : null}
-              <br />
-              {shipping.country || ""}
-              <br />
-              Phone: {shipping.phone || "N/A"}
-            </p>
-          </div>
+          <div className="relative flex justify-between text-center">
 
-          {/* Items */}
-          <div className="space-y-4">
-            {items.map((item: any, index: number) => (
-              <div
-                key={item._id || item.productId || index}
-                className="flex items-center gap-4 p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-md transition"
-              >
-                <img
-                  src={item.image || "/placeholder.png"}
-                  alt={item.name}
-                  className="w-16 h-16 md:w-20 md:h-20 object-cover rounded"
-                />
-                <div className="flex-1 text-left">
-                  <p className="text-gray-800 dark:text-gray-100 font-medium">
-                    {item.name}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Quantity: {item.quantity}
+            {/* Gray track */}
+            <div className="absolute top-4 left-0 h-1 bg-gray-300 w-full rounded"></div>
+
+            {/* Progress line */}
+            <div
+              className="absolute top-4 left-0 h-1 bg-green-500 rounded"
+              style={{ width: `${(statusIndex / 3) * 100}%` }}
+            ></div>
+
+            {STATUS_STEPS.map((step, i) => {
+              const active = i <= statusIndex;
+              return (
+                <div key={step.key} className="relative z-10">
+                  <div
+                    className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition
+                      ${
+                        active
+                          ? "bg-green-500 border-green-600 text-white"
+                          : "bg-white dark:bg-gray-700 border-gray-400 text-gray-400"
+                      }`}
+                  >
+                    <step.Icon size={18} />
+                  </div>
+                  <p
+                    className={`mt-2 text-xs ${
+                      active ? "text-green-600" : "text-gray-500"
+                    }`}
+                  >
+                    {step.label}
                   </p>
                 </div>
-                <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                  ₹{(item.price || 0) * (item.quantity || 1)}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Total */}
-          <div className="mt-6 text-right text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Total: ₹{order.total ?? 0}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-10 flex flex-col md:flex-row gap-4 justify-center">
-            <Button className="px-6 py-2" asChild>
-              <Link to="/shop">Continue Shopping</Link>
-            </Button>
-
-            <Button
-              asChild
-              className="px-6 py-2"
-              variant="outline"
-            >
-              <Link to="/account/orders">View All Orders</Link>
-            </Button>
+              );
+            })}
           </div>
         </div>
+
+        {/* Shipping Address */}
+        <div className="border rounded-lg p-4 space-y-1">
+          <p className="font-medium flex items-center gap-2">
+            <MapPin size={18} /> Delivery Address
+          </p>
+          <p className="text-sm text-gray-700 leading-5">
+            {shipping.firstName} {shipping.lastName} <br />
+            {shipping.street}, {shipping.city} <br />
+            {shipping.state} - {shipping.postalCode} <br />
+            {shipping.country} <br />
+            📞 {shipping.phone}
+          </p>
+        </div>
+
+        {/* ORDER ITEMS */}
+        <div className="space-y-4">
+          {order.items.map((item: any, i: number) => (
+            <div key={i} className="flex justify-between border p-4 rounded-lg">
+              <div className="flex items-center gap-3">
+                <img
+                  src={item.image}
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <div>
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-xs text-gray-500">
+                    Qty: {item.quantity}
+                  </p>
+                </div>
+              </div>
+              <p className="font-semibold">₹{item.price * item.quantity}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* TOTAL */}
+        <p className="text-lg font-semibold text-right">
+          Total: ₹{order.total}
+        </p>
+
+        {/* ACTIONS */}
+        <div className="flex justify-center gap-4 pt-4">
+          <Button asChild>
+            <Link to="/account/orders">View All Orders</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/shop">Continue Shopping</Link>
+          </Button>
+        </div>
+      </div>
+    </Page>
+  );
+}
+
+function Page({ children }: any) {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="container-custom py-10 flex-grow">
+        {children}
       </main>
       <Footer />
     </div>
