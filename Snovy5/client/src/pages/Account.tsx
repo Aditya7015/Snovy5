@@ -24,7 +24,7 @@ import {
 const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register } = useAuth();
+  const { login, register } = useAuth() ;
   const [isRegisterMode, setIsRegisterMode] = useState(
     new URLSearchParams(location.search).get("register") === "true"
   );
@@ -229,6 +229,8 @@ const Account = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, logout, updateUserProfile } = useAuth();
+  
+  
   const { getUserOrders } = useOrder();
   const { wishlist, removeFromWishlist, addToCart } = useCart();
 
@@ -371,9 +373,9 @@ const Account = () => {
               <TabsTrigger value="wishlist" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 <Heart size={18} className="mr-2" /> Wishlist
               </TabsTrigger>
-              <TabsTrigger value="settings" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              {/* <TabsTrigger value="settings" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 <Settings size={18} className="mr-2" /> Settings
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
           </div>
 
