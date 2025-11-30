@@ -27,7 +27,7 @@ const ProductDetail = () => {
         const res = await fetchProductById(productId!);
         setProduct(res);
 
-        const all = await fetchProducts({ page: 1, limit: 100 });
+        const all = await fetchProducts(1, 100);
         const related = all.data.filter(
           (p: any) => p.category === res.category && p._id !== res._id
         );
@@ -64,32 +64,59 @@ const ProductDetail = () => {
   const decreaseQuantity = () => setQuantity((q) => Math.max(1, q - 1));
   const increaseQuantity = () => setQuantity((q) => q + 1);
 
-  const handleAddToCart = () => {
-    addToCart({ 
+  // const handleAddToCart = () => {
+  //   addToCart({ 
+  //     id: product._id,
+  //     name: product.name,
+  //     price: product.price,
+  //     image: imageGallery[0],
+  //     category: product.category
+  //   }, quantity);
+  //   toast.success(`${product.name} added to cart`);
+  // };
+    const handleAddToCart = () => {
+  addToCart(
+    {
+      ...product,
       id: product._id,
-      name: product.name,
-      price: product.price,
       image: imageGallery[0],
-      category: product.category
-    }, quantity);
-    toast.success(`${product.name} added to cart`);
-  };
+    },
+    quantity
+  );
+  toast.success(`${product.name} added to cart`);
+};
+
+
+  // const handleWishlistToggle = () => {
+  //   if (productInWishlist) {
+  //     removeFromWishlist(product._id);
+  //     toast.success(`${product.name} removed from wishlist`);
+  //   } else {
+  //     addToWishlist({
+  //       id: product._id,
+  //       name: product.name,
+  //       price: product.price,
+  //       image: imageGallery[0],
+  //       category: product.category
+  //     });
+  //     toast.success(`${product.name} added to wishlist`);
+  //   }
+  // };
 
   const handleWishlistToggle = () => {
-    if (productInWishlist) {
-      removeFromWishlist(product._id);
-      toast.success(`${product.name} removed from wishlist`);
-    } else {
-      addToWishlist({
-        id: product._id,
-        name: product.name,
-        price: product.price,
-        image: imageGallery[0],
-        category: product.category
-      });
-      toast.success(`${product.name} added to wishlist`);
-    }
-  };
+  if (productInWishlist) {
+    removeFromWishlist(product._id);
+    toast.success(`${product.name} removed from wishlist`);
+  } else {
+    addToWishlist({
+      ...product,
+      id: product._id,
+      image: imageGallery[0],
+    });
+    toast.success(`${product.name} added to wishlist`);
+  }
+};
+
 
   return (
     <div className="flex flex-col min-h-screen">
