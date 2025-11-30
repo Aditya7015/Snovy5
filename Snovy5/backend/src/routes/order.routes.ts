@@ -50,6 +50,7 @@ router.post(
         billingAddress,
         total,
         paymentMethod: "cod",
+        status: "pending",
       });
 
       res.status(201).json(format(order));
@@ -60,12 +61,26 @@ router.post(
   }
 );
 
-/* USER: get own orders, ADMIN: get all */
+/* USER: get own orders */
 router.get("/orders", attachUser, async (req: Request, res: Response) => {
   const user = (req as any).user;
   const filter = user.isAdmin ? {} : { userId: user._id };
   const orders = await Order.find(filter).sort({ createdAt: -1 });
   res.json(orders.map(format));
+});
+
+/* GET SINGLE ORDER */
+router.get("/orders/:id", attachUser, async (req: Request, res: Response) => {
+  const user = (req as any).user;
+  const order = await Order.findById(req.params.id);
+
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  if (!user.isAdmin && order.userId.toString() !== user._id.toString()) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  res.json(format(order));
 });
 
 /* CANCEL ORDER */
@@ -82,7 +97,7 @@ router.patch("/orders/:id/cancel", attachUser, async (req, res) => {
   res.json(format(order));
 });
 
-/* ADMIN: Status update (tracking optional) */
+/* ADMIN: Status update */
 router.patch(
   "/admin/orders/:id/status",
   attachUser,

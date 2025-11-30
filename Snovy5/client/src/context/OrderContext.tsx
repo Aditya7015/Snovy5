@@ -1,358 +1,147 @@
-// import React, { createContext, useContext, useState, useEffect } from 'react';
-// import { useAuth, User } from './AuthContext';
-// import { CartItem } from './CartContext';
+import { createContext, useContext, useState, useEffect } from "react";
 
-// export interface OrderAddress {
-//     firstName: string;
-//     lastName: string;
-//     street: string;
-//     city: string;
-//     state: string;
-//     postalCode: string;
-//     country: string;
-//     phone: string;
-// }
-
-// interface PaymentInfo {
-//     cardNumber?: string;
-//     cardholderName?: string;
-//     expiryDate?: string;
-//     cvv?: string;
-//     paypalEmail?: string;
-// }
-
-// export interface Order {
-//     id: string;
-//     userId: string;
-//     date: string;
-//     items: CartItem[];
-//     total: number;
-//     shippingAddress: OrderAddress;
-//     billingAddress: OrderAddress;
-//     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'canceled';
-//     trackingNumber?: string;
-//     paymentMethod: 'credit-card' | 'paypal';
-//     paymentInfo?: PaymentInfo;
-// }
-
-// interface OrderContextType {
-//     orders: Order[];
-//     getUserOrders: () => Order[];
-//     getOrderById: (orderId: string) => Order | undefined;
-//     createOrder: (
-//         items: CartItem[],
-//         shippingAddress: OrderAddress,
-//         billingAddress: OrderAddress,
-//         paymentMethod: 'credit-card' | 'paypal',
-//         paymentInfo?: PaymentInfo
-//     ) => Promise<Order>;
-//     cancelOrder: (orderId: string) => Promise<void>;
-// }
-
-// const OrderContext = createContext<OrderContextType | undefined>(undefined);
-
-// export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-//     const { user } = useAuth();
-//     const [orders, setOrders] = useState<Order[]>([]);
-//     const [isInitialized, setIsInitialized] = useState(false);
-
-//     // Load orders from localStorage on mount
-//     useEffect(() => {
-//         const savedOrders = localStorage.getItem('orders');
-//         if (savedOrders) {
-//             try {
-//                 setOrders(JSON.parse(savedOrders));
-//             } catch (error) {
-//                 console.error('Failed to parse orders from localStorage:', error);
-//             }
-//         }
-//         setIsInitialized(true);
-//     }, []);
-
-//     // Save orders to localStorage whenever they change
-//     useEffect(() => {
-//         if (isInitialized) {
-//             localStorage.setItem('orders', JSON.stringify(orders));
-//         }
-//     }, [orders, isInitialized]);
-
-//     // Get orders for the current user
-//     const getUserOrders = () => {
-//         if (!user) return [];
-//         return orders.filter(order => order.userId === user.id)
-//             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-//     };
-
-//     // Get a specific order by ID
-//     const getOrderById = (orderId: string) => {
-//         if (!user) return undefined;
-//         return orders.find(order => order.id === orderId && order.userId === user.id);
-//     };
-
-//     // Create a new order
-//     const createOrder = async (
-//         items: CartItem[],
-//         shippingAddress: OrderAddress,
-//         billingAddress: OrderAddress,
-//         paymentMethod: 'credit-card' | 'paypal',
-//         paymentInfo?: PaymentInfo
-//     ) => {
-//         if (!user) {
-//             throw new Error('User must be logged in to create an order');
-//         }
-
-//         // Simulate payment processing delay
-//         await new Promise(resolve => setTimeout(resolve, 1500));
-
-//         // Calculate order total
-//         const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-//         const shippingCost = subtotal >= 50 ? 0 : 5.99;
-//         const total = subtotal + shippingCost;
-
-//         // Create new order
-//         const newOrder: Order = {
-//             id: `ORD${Date.now().toString().slice(-8)}`,
-//             userId: user.id,
-//             date: new Date().toISOString(),
-//             items: [...items],
-//             total,
-//             shippingAddress,
-//             billingAddress,
-//             status: 'processing',
-//             paymentMethod,
-//             paymentInfo: paymentMethod === 'credit-card' ? {
-//                 // Store only last 4 digits of card number for security
-//                 cardNumber: paymentInfo?.cardNumber ?
-//                     `**** **** **** ${paymentInfo.cardNumber.slice(-4)}` :
-//                     undefined,
-//                 cardholderName: paymentInfo?.cardholderName,
-//                 expiryDate: paymentInfo?.expiryDate,
-//             } : {
-//                 paypalEmail: user.email
-//             }
-//         };
-
-//         // Update orders state
-//         setOrders(prev => [...prev, newOrder]);
-
-//         return newOrder;
-//     };
-
-//     // Cancel an order
-//     const cancelOrder = async (orderId: string) => {
-//         if (!user) {
-//             throw new Error('User must be logged in to cancel an order');
-//         }
-
-//         const orderToCancel = orders.find(
-//             order => order.id === orderId && order.userId === user.id
-//         );
-
-//         if (!orderToCancel) {
-//             throw new Error('Order not found');
-//         }
-
-//         if (orderToCancel.status === 'shipped' || orderToCancel.status === 'delivered') {
-//             throw new Error('Cannot cancel an order that has already been shipped or delivered');
-//         }
-
-//         // Simulate API call delay
-//         await new Promise(resolve => setTimeout(resolve, 500));
-
-//         // Update order status
-//         setOrders(prev => prev.map(order =>
-//             order.id === orderId ? { ...order, status: 'canceled' } : order
-//         ));
-//     };
-
-//     return (
-//         <OrderContext.Provider value={{
-//             orders,
-//             getUserOrders,
-//             getOrderById,
-//             createOrder,
-//             cancelOrder
-//         }}>
-//             {children}
-//         </OrderContext.Provider>
-//     );
-// };
-
-// export const useOrder = () => {
-//     const context = useContext(OrderContext);
-//     if (context === undefined) {
-//         throw new Error('useOrder must be used within an OrderProvider');
-//     }
-//     return context;
-// };
-
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import { CartItem } from './CartContext';
+const API_URL = "http://localhost:5000";
 
 export interface OrderAddress {
-    firstName: string;
-    lastName: string;
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-    phone: string;
+  firstName: string;
+  lastName: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string;
 }
 
-export interface PaymentInfo {
-    cardNumber?: string;
-    cardholderName?: string;
-    expiryDate?: string;
-    cvv?: string;
-    paypalEmail?: string;
+interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
 }
 
-export interface Order {
-    id: string;
-    userId: string;
-    date: string;
-    items: CartItem[];
-    total: number;
-    shippingAddress: OrderAddress;
-    billingAddress: OrderAddress;
-    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'canceled';
-    trackingNumber?: string;
-    paymentMethod: 'credit-card' | 'paypal';
-    paymentInfo?: PaymentInfo;
+interface Order {
+  id: string;
+  date: string;
+  items: OrderItem[];
+  total: number;
+  status: string;
+  paymentMethod: string;
+  shippingAddress: OrderAddress;
+  billingAddress: OrderAddress;
 }
 
 interface OrderContextType {
-    orders: Order[];
-    getUserOrders: () => Order[];
-    getOrderById: (orderId: string) => Order | undefined;
-    createOrder: (
-        items: CartItem[],
-        shippingAddress: OrderAddress,
-        billingAddress: OrderAddress,
-        paymentMethod: 'credit-card' | 'paypal',
-        paymentInfo?: PaymentInfo
-    ) => Promise<Order>;
-    cancelOrder: (orderId: string) => Promise<void>;
-    
-    // 🚀 Admin-only Actions
-    updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  orders: Order[];
+  fetchOrders: () => Promise<void>;
+  createOrder: (
+    items: any[],
+    shippingAddress: OrderAddress,
+    billingAddress: OrderAddress
+  ) => Promise<Order>;
+  updateOrderStatus: (id: string, status: string) => Promise<void>;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
-export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user } = useAuth();
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [isInitialized, setIsInitialized] = useState(false);
+export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
+  const [orders, setOrders] = useState<Order[]>([]);
 
-    // Load orders from localStorage when app loads
-    useEffect(() => {
-        const savedOrders = localStorage.getItem('orders');
-        if (savedOrders) {
-            setOrders(JSON.parse(savedOrders));
-        }
-        setIsInitialized(true);
-    }, []);
+  const getToken = () => localStorage.getItem("token");
 
-    // Save whenever orders update
-    useEffect(() => {
-        if (isInitialized) {
-            localStorage.setItem('orders', JSON.stringify(orders));
-        }
-    }, [orders, isInitialized]);
+  // Fetch user/admin orders from backend
+  const fetchOrders = async () => {
+    const token = getToken();
+    if (!token) return;
 
-    const getUserOrders = () => {
-        if (!user) return [];
-        return orders
-            .filter(order => order.userId === user.id)
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    };
+    try {
+      const res = await fetch(`${API_URL}/orders`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setOrders(data);
+    } catch (error) {
+      console.error("Failed to load orders", error);
+    }
+  };
 
-    const getOrderById = (orderId: string) => {
-        return orders.find(order => order.id === orderId);
-    };
+  // Create COD Order
+  const createOrder = async (
+    items: any[],
+    shippingAddress: OrderAddress,
+    billingAddress: OrderAddress
+  ) => {
+    const token = getToken();
+    if (!token) throw new Error("Not authenticated");
 
-    const createOrder = async (
-        items: CartItem[],
-        shippingAddress: OrderAddress,
-        billingAddress: OrderAddress,
-        paymentMethod: 'credit-card' | 'paypal',
-        paymentInfo?: PaymentInfo
-    ): Promise<Order> => {
-        if (!user) throw new Error('User must be logged in to create an order');
+    const mappedItems = items.map((item: any) => ({
+      productId: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image,
+    }));
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
+    const res = await fetch(`${API_URL}/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items: mappedItems,
+        shippingAddress,
+        billingAddress,
+        paymentMethod: "cod",
+      }),
+    });
 
-        const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        const shippingCost = subtotal >= 50 ? 0 : 5.99;
-        const total = subtotal + shippingCost;
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Order failed");
+    }
 
-        const newOrder: Order = {
-            id: `ORD${Date.now().toString().slice(-8)}`,
-            userId: user.id,
-            date: new Date().toISOString(),
-            items: [...items],
-            total,
-            shippingAddress,
-            billingAddress,
-            status: 'pending', // 🛠 user-created orders start at "pending"
-            paymentMethod,
-            paymentInfo
-        };
+    const newOrder = await res.json();
+    await fetchOrders();
+    return newOrder as Order;
+  };
 
-        setOrders(prev => [...prev, newOrder]);
-        return newOrder;
-    };
+  // Admin: update status
+  const updateOrderStatus = async (id: string, status: string) => {
+    const token = getToken();
+    if (!token) throw new Error("Not authenticated");
 
-    const cancelOrder = async (orderId: string) => {
-        if (!user) throw new Error('User must be logged in to cancel an order');
+    const res = await fetch(`${API_URL}/admin/orders/${id}/status`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
 
-        const order = orders.find(order => order.id === orderId);
-        if (!order) throw new Error('Order not found');
+    if (!res.ok) throw new Error("Update failed");
 
-        if (['shipped', 'delivered'].includes(order.status)) {
-            throw new Error('Cannot cancel after shipping');
-        }
+    await fetchOrders();
+  };
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-        setOrders(prev =>
-            prev.map(order =>
-                order.id === orderId ? { ...order, status: 'canceled' } : order
-            )
-        );
-    };
-
-    // 🚀 Admin function (NO user restriction)
-    const updateOrderStatus = (orderId: string, status: Order['status']) => {
-        setOrders(prev =>
-            prev.map(order =>
-                order.id === orderId ? { ...order, status } : order
-            )
-        );
-    };
-
-    return (
-        <OrderContext.Provider
-            value={{
-                orders,
-                getUserOrders,
-                getOrderById,
-                createOrder,
-                cancelOrder,
-                updateOrderStatus,
-            }}
-        >
-            {children}
-        </OrderContext.Provider>
-    );
+  return (
+    <OrderContext.Provider
+      value={{ orders, fetchOrders, createOrder, updateOrderStatus }}
+    >
+      {children}
+    </OrderContext.Provider>
+  );
 };
 
 export const useOrder = () => {
-    const ctx = useContext(OrderContext);
-    if (!ctx) throw new Error('useOrder must be used within OrderProvider');
-    return ctx;
+  const ctx = useContext(OrderContext);
+  if (!ctx) throw new Error("useOrder must be used within OrderProvider");
+  return ctx;
 };

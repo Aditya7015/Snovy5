@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface UserAddress {
     street: string;
@@ -21,293 +21,118 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (userData: { email: string; password: string; firstName: string; lastName: string }) => Promise<void>;
+    register: (data: { email: string; password: string; firstName: string; lastName: string }) => Promise<void>;
     logout: () => void;
-    updateUserProfile: (userData: Partial<User>) => Promise<void>;
+    updateUserProfile: (data: Partial<User>) => Promise<void>;
     updateUserAddress: (address: UserAddress) => Promise<void>;
 }
 
-// Create the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Sample user data for demo purposes
-const SAMPLE_USERS = [
-    {
-        id: "user1",
-        email: "john@example.com",
-        firstName: "John",
-        lastName: "Doe",
-        password: "password123",
-        phone: "(555) 123-4567",
-        address: {
-            street: "123 Main St",
-            city: "Anytown",
-            state: "ST",
-            postalCode: "12345",
-            country: "United States"
-        }
-    },
-    {
-        id: "user2",
-        email: "jane@example.com",
-        firstName: "Jane",
-        lastName: "Smith",
-        password: "password456",
-        phone: "(555) 987-6543",
-        address: {
-            street: "456 Oak Ave",
-            city: "Somewhere",
-            state: "ST",
-            postalCode: "67890",
-            country: "United States"
-        }
-    }
-];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
 
-    // Load user from localStorage on mount
+    const API_BASE = "http://localhost:5000/user";
+
+    // Load saved user on app start
     useEffect(() => {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            try {
-                const parsedUser = JSON.parse(savedUser);
-                setUser(parsedUser.user);
-                setIsAuthenticated(true);
-            } catch (error) {
-                console.error('Failed to parse user from localStorage:', error);
-            }
+        const saved = localStorage.getItem("user");
+        if (saved) {
+            setUser(JSON.parse(saved));  // FIXED
         }
-        setIsInitialized(true);
     }, []);
 
-    // Save user to localStorage whenever it changes
-    useEffect(() => {
-        if (isInitialized) {
-            if (user) {
-                localStorage.setItem('user', JSON.stringify(user));
-            } else {
-                localStorage.removeItem('user');
-            }
-        }
-    }, [user, isInitialized]);
-
-    // Login function - in a real app this would call an API
-    const login = async (email: string, password: string) => {
-        // Simulate API request delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        console.log(email,password);
-        // Find user with matching email and password
-        const foundUser = SAMPLE_USERS.find(u =>
-            u.email.toLowerCase() === email.toLowerCase() && u.password === password
-        );
-
-        if (!foundUser) {
-            throw new Error('Invalid email or password');
-        }
-
-        // Remove password from user object before storing
-        const { password: _, ...userWithoutPassword } = foundUser;
-
-        // Update state
-        setUser(userWithoutPassword as User);
-        setIsAuthenticated(true);
-
-        return;
+    const saveUser = (userData: User) => {
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
     };
 
-    // Register function - in a real app this would call an API
-    const register = async (userData: {
+    // ---------------------------
+    // LOGIN (BACKEND CONNECTED)
+    // ---------------------------
+    const login = async (email: string, password: string) => {
+        const res = await fetch(`${API_BASE}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Login failed");
+
+        // FIX: Save ONLY the user object
+        saveUser(data.user);
+
+        // Optional: store token
+        localStorage.setItem("token", data.token);
+    };
+
+    // ---------------------------
+    // REGISTER (BACKEND CONNECTED)
+    // ---------------------------
+    const register = async (formData: {
         email: string;
         password: string;
         firstName: string;
-        lastName: string
+        lastName: string;
     }) => {
-        // Simulate API request delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const res = await fetch(`${API_BASE}/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
 
-        // Check if email is already taken
-        if (SAMPLE_USERS.some(u => u.email.toLowerCase() === userData.email.toLowerCase())) {
-            throw new Error('Email is already in use');
-        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Registration failed");
 
-        // Create new user (in a real app, this would be handled by the backend)
-        const newUser: User = {
-            id: `user${Date.now()}`,
-            email: userData.email,
-            firstName: userData.firstName,
-            lastName: userData.lastName
-        };
+        // FIX: Save ONLY the user
+        saveUser(data.user);
 
-        // Update state
-        setUser(newUser);
-        setIsAuthenticated(true);
-
-        return;
+        localStorage.setItem("token", data.token);
     };
 
-    // Logout function
+    // LOGOUT
     const logout = () => {
         setUser(null);
-        setIsAuthenticated(false);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
     };
 
-    // Update user profile
-    const updateUserProfile = async (userData: Partial<User>) => {
-        // Simulate API request delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // UPDATE PROFILE
+    const updateUserProfile = async (updated: Partial<User>) => {
+        if (!user) throw new Error("No authenticated user");
 
-        if (!user) {
-            throw new Error('No user is currently authenticated');
-        }
-
-        // Update user data
-        const updatedUser = {
-            ...user,
-            ...userData
-        };
-
-        setUser(updatedUser);
-
-        return;
+        const newUser = { ...user, ...updated };
+        saveUser(newUser);
     };
 
-    // Update user address
+    // UPDATE ADDRESS
     const updateUserAddress = async (address: UserAddress) => {
-        // Simulate API request delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (!user) throw new Error("No authenticated user");
 
-        if (!user) {
-            throw new Error('No user is currently authenticated');
-        }
-
-        // Update user address
-        const updatedUser = {
-            ...user,
-            address
-        };
-
-        setUser(updatedUser);
-
-        return;
+        const newUser = { ...user, address };
+        saveUser(newUser);
     };
-   
 
     return (
-        <AuthContext.Provider value={{
-            user,
-            isAuthenticated,
-            login,
-            register,
-            logout,
-            updateUserProfile,
-            updateUserAddress
-        }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                isAuthenticated: !!user,
+                login,
+                register,
+                logout,
+                updateUserProfile,
+                updateUserAddress,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+    const ctx = useContext(AuthContext);
+    if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+    return ctx;
 };
-
-
-
-// import React, { createContext, useContext, useState, useEffect } from "react";
-
-// export interface User {
-//     id: string;
-//     email: string;
-//     firstName: string;
-//     lastName: string;
-//     isAdmin?: boolean;
-// }
-
-// interface AuthContextType {
-//     user: User | null;
-//     isAuthenticated: boolean;
-//     login: (email: string, password: string) => Promise<void>;
-//     register: (data: { email: string; password: string; firstName: string; lastName: string }) => Promise<void>;
-//     logout: () => void;
-// }
-
-// const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-//     const [user, setUser] = useState<User | null>(null);
-
-//     const API_BASE = "http://localhost:5000/user";
-
-//     // Load stored user
-//     useEffect(() => {
-//         const saved = localStorage.getItem("user");
-//         if (saved) setUser(JSON.parse(saved));
-//     }, []);
-
-//     const saveUser = (userData: User) => {
-//         setUser(userData);
-//         localStorage.setItem("user", JSON.stringify(userData));
-//     };
-
-//     // 🔹 Login using Backend
-//     const login = async (email: string, password: string) => {
-//         const res = await fetch(`${API_BASE}/login`, {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify({ email, password }),
-//         });
-
-//         const data = await res.json();
-//         if (!res.ok) throw new Error(data.error || "Login failed");
-
-//         saveUser(data);
-//     };
-
-//     // 🔹 Register using Backend
-//     const register = async (formData: {
-//         email: string; password: string; firstName: string; lastName: string;
-//     }) => {
-//         const res = await fetch(`${API_BASE}/register`, {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify(formData),
-//         });
-
-//         const data = await res.json();
-//         if (!res.ok) throw new Error(data.error || "Registration failed");
-
-//         saveUser(data);
-//     };
-
-//     const logout = () => {
-//         setUser(null);
-//         localStorage.removeItem("user");
-//     };
-
-//     return (
-//         <AuthContext.Provider value={{
-//             user,
-//             isAuthenticated: !!user,
-//             login,
-//             register,
-//             logout,
-//         }}>
-//             {children}
-//         </AuthContext.Provider>
-//     );
-// };
-
-// export const useAuth = () => {
-//     const ctx = useContext(AuthContext);
-//     if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
-//     return ctx;
-// };
