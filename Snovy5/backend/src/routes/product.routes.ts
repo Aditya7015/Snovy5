@@ -63,7 +63,7 @@ productRouter.get("/:id", async (req, res) => {
 });
 
 // create (admin)
-productRouter.post("/createPro",attachUser,adminOnly, upload.array("images", 6), async (req, res) => {
+productRouter.post("/createPro",attachUser,adminOnly, upload.array("images", 5), async (req, res) => {
   try {
     const { name, description, price, category, stock } = req.body;
     let images: string[] = [];
@@ -99,7 +99,7 @@ productRouter.post("/createPro",attachUser,adminOnly, upload.array("images", 6),
 });
 
 // update
-productRouter.put("/updatePro/:id", attachUser, adminOnly, upload.array("images", 6), async (req, res) => {
+productRouter.put("/updatePro/:id", attachUser, adminOnly, upload.array("images", 5), async (req, res) => {
   try {
     const existing = await Product.findById(req.params.id);
     if (!existing) return res.status(404).json({ error: "Not found" });
