@@ -44,68 +44,65 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <AuthProvider>
+        <AuthProvider> {/* SINGLE WRAPPER ✔ */}
+          <AdminAuthProvider>
+            <AdminProductProvider>
+              <CartProvider>
+                <OrderProvider>
+                  <ThemeProvider>
 
-          {/* Admin Authentication */}
-          <AuthProvider>
-  <AdminAuthProvider>
-    <AdminProductProvider>   {/* <-- MOVED HERE: wraps entire app */}
-      <CartProvider>
-        <OrderProvider>
-          <ThemeProvider>
+                    {/* GLOBAL Animation */}
+                    <ParticlesComponent />
 
-            <ParticlesComponent />
-            <Toaster />
-            <Sonner />
+                    <Toaster />
+                    <Sonner />
 
-            <Routes>
+                    <Routes>
 
-              {/* USER ROUTES */}
-              <Route path="/" element={<Index />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/product/:productId" element={<ProductDetail />} />
-              <Route path="/category/:categoryId" element={<Shop />} />
-              <Route path="/collection/:collectionId" element={<Shop />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/account/orders" element={<AccountOrders />} />
+                      {/* USER ROUTES */}
+                      <Route path="/" element={<Index />} />
+                      <Route path="/shop" element={<Shop />} />
+                      <Route path="/categories" element={<Categories />} />
+                      <Route path="/wishlist" element={<Wishlist />} />
+                      <Route path="/product/:productId" element={<ProductDetail />} />
+                      <Route path="/category/:categoryId" element={<Shop />} />
+                      <Route path="/collection/:collectionId" element={<Shop />} />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/checkout" element={<Checkout />} />
+                      <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+                      <Route path="/account" element={<Account />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/services" element={<Services />} />
+                      <Route path="/account/orders" element={<AccountOrders />} />
 
-              {/* ADMIN LOGIN */}
-              <Route path="/admin/login" element={<AdminLogin />} />
+                      {/* ADMIN LOGIN */}
+                      <Route path="/admin/login" element={<AdminLogin />} />
 
-              {/* ADMIN SECURED AREA */}
-              <Route
-                path="/admin/*"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminLayout />
-                  </AdminProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="add-product" element={<AdminAddProduct />} />
-                <Route path="orders" element={<AdminOrders />} />
-              </Route>
+                      {/* SECURED ADMIN AREA */}
+                      <Route
+                        path="/admin/*"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminLayout />
+                          </AdminProtectedRoute>
+                        }
+                      >
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="products" element={<AdminProducts />} />
+                        <Route path="add-product" element={<AdminAddProduct />} />
+                        <Route path="orders" element={<AdminOrders />} />
+                      </Route>
 
-              {/* 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                      {/* 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
 
-          </ThemeProvider>
-        </OrderProvider>
-      </CartProvider>
-    </AdminProductProvider>
-  </AdminAuthProvider>
-</AuthProvider>
-
+                  </ThemeProvider>
+                </OrderProvider>
+              </CartProvider>
+            </AdminProductProvider>
+          </AdminAuthProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

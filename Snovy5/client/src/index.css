@@ -147,3 +147,6 @@
 }
 
 
+.glass-card {
+  @apply bg-white/15 dark:bg-gray-900/15 backdrop-blur-xl border border-white/20 shadow-lg transition hover:shadow-2xl;
+}
