@@ -1,71 +1,95 @@
-
 import { Link } from "react-router-dom";
-import { useCart, Product } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import { gsap } from "gsap";
 
+interface BackendProduct {
+  _id: string;
+  name: string;
+  description?: string;
+  price: number;
+  images?: string[];
+  category?: string;
+  stock?: number;
+}
+
 interface ProductCardProps {
-  product: Product;
+  product: BackendProduct;
   featuredSize?: boolean;
 }
 
 const ProductCard = ({ product, featuredSize = false }: ProductCardProps) => {
-  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
+  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } =
+    useCart();
   const [isHovered, setIsHovered] = useState(false);
-  
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsHovered(true);
-    gsap.to(e.currentTarget, {
-      y: -10,
-      duration: 0.3,
-      ease: "power2.out"
-    });
-  };
-  
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsHovered(false);
-    gsap.to(e.currentTarget, {
-      y: 0,
-      duration: 0.3,
-      ease: "power2.out"
-    });
-  };
-  
-  const handleAddToCart = (e: React.MouseEvent) => {
+
+  // Always use `_id`
+  const productId = product?._id;
+  const imageUrl =
+    product?.images?.[0] ||
+    "https://via.placeholder.com/400x600?text=No+Image";
+
+  const handleAddToCart = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
-    toast.success(`${product.name} added to cart`);
+
+    addToCart({
+      id: productId,
+      name: product.name,
+      price: product.price,
+      image: imageUrl,
+      category: product.category || "General",
+      description: product.description || "",
+    });
+
+    toast.success("Added to Cart!");
   };
 
-  const handleWishlist = (e: React.MouseEvent) => {
+  const handleWishlist = (e: any) => {
     e.preventDefault();
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-      toast.success(`${product.name} removed from wishlist`);
+    e.stopPropagation();
+
+    if (isInWishlist(productId)) {
+      removeFromWishlist(productId);
+      toast.success("Removed from wishlist");
     } else {
-      addToWishlist(product);
-      toast.success(`${product.name} added to wishlist`);
+      addToWishlist({
+        id: productId,
+        name: product.name,
+        price: product.price,
+        image: imageUrl,
+        category: product.category || "General",
+        description: product.description || "",
+      });
+      toast.success("Added to wishlist");
     }
   };
-  
+
   return (
     <div
-      className={`group relative overflow-hidden rounded-lg transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl ${
-        featuredSize ? "col-span-2 row-span-2" : ""
-      }`}
+      className="group relative overflow-hidden rounded-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+      onMouseEnter={(e) => {
+        setIsHovered(true);
+        gsap.to(e.currentTarget, { y: -10, duration: 0.3 });
+      }}
+      onMouseLeave={(e) => {
+        setIsHovered(false);
+        gsap.to(e.currentTarget, { y: 0, duration: 0.3 });
+      }}
     >
-      <Link to={`/product/${product.id}`} className="block">
-        <div className="relative overflow-hidden aspect-[3/4] mb-3 bg-secondary/50">
+      <Link to={`/product/${productId}`} className="block">
+        <div className="relative overflow-hidden aspect-[3/4] bg-secondary/50">
           <img
-            src={product.image}
+            src={imageUrl}
             alt={product.name}
+            loading="lazy"
             className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
           />
 
+          {/* Action Buttons */}
           <div
             className={`absolute bottom-0 left-0 right-0 p-4 flex justify-center space-x-2 transition-all duration-300 ${
               isHovered ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
@@ -73,33 +97,26 @@ const ProductCard = ({ product, featuredSize = false }: ProductCardProps) => {
           >
             <Button
               size="sm"
-              variant={isInWishlist(product.id) ? "default" : "secondary"}
-              className="rounded-full w-10 h-10 p-0 flex items-center justify-center"
+              variant={isInWishlist(productId) ? "default" : "secondary"}
+              className="rounded-full w-10 h-10 flex items-center justify-center"
               onClick={handleWishlist}
             >
-              <Heart
-                size={16}
-                className={isInWishlist(product.id) ? "fill-current" : ""}
-              />
+              <Heart className={isInWishlist(productId) ? "fill-current" : ""} />
             </Button>
+
             <Button
               size="sm"
-              className="rounded-full flex-1 flex items-center justify-center bg-primary"
+              className="rounded-full bg-primary"
               onClick={handleAddToCart}
             >
-              <ShoppingBag size={16} className="mr-2" /> Add to Cart
+              <ShoppingBag size={16} className="mr-2" />
+              Add
             </Button>
           </div>
         </div>
 
-        <div>
-          <h3 className={`font-medium ${featuredSize ? "text-lg" : ""}`}>
-            {product.name}
-          </h3>
-          <p className="text-muted-foreground mt-1">
-            ${product.price.toFixed(2)}
-          </p>
-        </div>
+        <h3 className="font-medium mt-3">{product.name}</h3>
+        <p className="text-muted-foreground">₹{product.price}</p>
       </Link>
     </div>
   );

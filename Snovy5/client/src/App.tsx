@@ -46,65 +46,64 @@ const App = () => (
         <AuthProvider>
 
           {/* Admin Authentication */}
-          <AdminAuthProvider>
+          <AuthProvider>
+  <AdminAuthProvider>
+    <AdminProductProvider>   {/* <-- MOVED HERE: wraps entire app */}
+      <CartProvider>
+        <OrderProvider>
+          <ThemeProvider>
 
-            <CartProvider>
-              <OrderProvider>
-                <ThemeProvider>
+            <ParticlesComponent />
+            <Toaster />
+            <Sonner />
 
-                  <ParticlesComponent />
-                  <Toaster />
-                  <Sonner />
+            <Routes>
 
-                  <Routes>
+              {/* USER ROUTES */}
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/product/:productId" element={<ProductDetail />} />
+              <Route path="/category/:categoryId" element={<Shop />} />
+              <Route path="/collection/:collectionId" element={<Shop />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/services" element={<Services />} />
 
-                    {/* USER ROUTES */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/shop" element={<Shop />} />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="/product/:productId" element={<ProductDetail />} />
-                    <Route path="/category/:categoryId" element={<Shop />} />
-                    <Route path="/collection/:collectionId" element={<Shop />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
-                    <Route path="/order/:orderId" element={<OrderConfirmation />} />
-                    <Route path="/account" element={<Account />} />
-                    <Route path="/account/*" element={<Account />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/services" element={<Services />} />
+              {/* ADMIN LOGIN */}
+              <Route path="/admin/login" element={<AdminLogin />} />
 
-                    {/* ADMIN LOGIN (UNPROTECTED) */}
-                    <Route path="/admin/login" element={<AdminLogin />} />
+              {/* ADMIN SECURED AREA */}
+              <Route
+                path="/admin/*"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminLayout />
+                  </AdminProtectedRoute>
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="add-product" element={<AdminAddProduct />} />
+                <Route path="orders" element={<AdminOrders />} />
+              </Route>
 
-                    {/* ADMIN SECURED AREA */}
-                    <Route
-                      path="/admin/*"
-                      element={
-                        <AdminProtectedRoute>
-                          <AdminProductProvider>
-                            <AdminLayout />
-                          </AdminProductProvider>
-                        </AdminProtectedRoute>
-                      }
-                    >
-                      <Route index element={<AdminDashboard />} />
-                      <Route path="products" element={<AdminProducts />} />
-                      <Route path="add-product" element={<AdminAddProduct />} />
-                      <Route path="orders" element={<AdminOrders />} />
-                    </Route>
+              {/* 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-                    {/* 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+          </ThemeProvider>
+        </OrderProvider>
+      </CartProvider>
+    </AdminProductProvider>
+  </AdminAuthProvider>
+</AuthProvider>
 
-                </ThemeProvider>
-              </OrderProvider>
-            </CartProvider>
-
-          </AdminAuthProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

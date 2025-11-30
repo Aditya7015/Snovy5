@@ -1,411 +1,168 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
-import { products, categories } from "@/data/products";
-import { Slider } from "@/components/ui/slider";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { X, GridIcon, List } from "lucide-react";
-import { Button } from "@/components/ui/button";
+  // src/pages/Shop.tsx
+  import { useState, useEffect } from "react";
+  import { useSearchParams } from "react-router-dom";
+  import Header from "@/components/Header";
+  import Footer from "@/components/Footer";
+  import ProductCard from "@/components/ProductCard";
+  import { fetchProducts } from "@/api/productApi";
+  import { Slider } from "@/components/ui/slider";
+  import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select";
+  import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+  import { Checkbox } from "@/components/ui/checkbox";
+  import { X, GridIcon, List } from "lucide-react";
+  import { Button } from "@/components/ui/button";
 
-const Shop = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [filteredProducts, setFilteredProducts] = useState(products);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState([0, 400]);
-  const [sortBy, setSortBy] = useState("featured");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const Shop = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [products, setProducts] = useState<any[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
+    const [sortBy, setSortBy] = useState("featured");
+    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Preserve category filter from URL
-  useEffect(() => {
-    const categoryParam = searchParams.get("category");
-    if (categoryParam) {
-      setSelectedCategories([categoryParam]);
-    }
-  }, [searchParams]);
+    useEffect(() => {
+      async function load() {
+        try {
+          const res = await fetchProducts({ page: 1, limit: 100 });
+          const dataArray = res.data || [];
+          setProducts(dataArray);
+          setFilteredProducts(dataArray);
+        } catch (err) {
+          console.error("Failed loading products", err);
+        }
+      }
+      load();
+    }, []);
 
-  // Apply filters
-  useEffect(() => {
-    let result = [...products];
+    // Preserve category filter from URL
+    useEffect(() => {
+      const categoryParam = searchParams.get("category");
+      if (categoryParam) {
+        setSelectedCategories([categoryParam]);
+      }
+    }, [searchParams]);
 
-    // Filter by category
-    if (selectedCategories.length > 0) {
-      result = result.filter(product =>
-        selectedCategories.includes(product.category)
+    useEffect(() => {
+      let result = [...products];
+
+      if (selectedCategories.length > 0) {
+        result = result.filter((product) =>
+          selectedCategories.includes(product.category || "")
+        );
+      }
+
+      result = result.filter(
+        (product) => product.price >= priceRange[0] && product.price <= priceRange[1]
       );
-    }
 
-    // Filter by price
-    result = result.filter(product =>
-      product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
+      switch (sortBy) {
+        case "price-low":
+          result.sort((a, b) => a.price - b.price);
+          break;
+        case "price-high":
+          result.sort((a, b) => b.price - a.price);
+          break;
+        case "name":
+          result.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+      }
 
-    // Sorting logic
-    switch (sortBy) {
-      case "price-low":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "name":
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-    }
+      setFilteredProducts(result);
+    }, [products, selectedCategories, priceRange, sortBy]);
 
-    setFilteredProducts(result);
-  }, [selectedCategories, priceRange, sortBy]);
+    const categories = Array.from(
+      new Set(products.map((p) => p.category || "Uncategorized"))
+    ).map((name, index) => ({ id: String(index), name }));
 
-  // Toggle category selection
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
-  };
+    const toggleCategory = (category: string) => {
+      setSelectedCategories((prev) =>
+        prev.includes(category)
+          ? prev.filter((c) => c !== category)
+          : [...prev, category]
+      );
+    };
 
-  // Reset Filters
-  const clearFilters = () => {
-    setSelectedCategories([]);
-    setPriceRange([0, 400]);
-    setSortBy("featured");
-    setSearchParams({});
-  };
+    const clearFilters = () => {
+      setSelectedCategories([]);
+      setPriceRange([0, 5000]);
+      setSortBy("featured");
+      setSearchParams({});
+    };
 
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
 
-      <main className="flex-grow">
+        <main className="flex-grow">
+          <section className="bg-secondary py-16">
+            <div className="container-custom">
+              <h1 className="text-4xl font-serif mb-4">Snovy5 — Shop</h1>
+            </div>
+          </section>
 
-        {/* ================= SHOP HEADER ================= */}
-        <section className="bg-secondary py-16">
-          <div className="container-custom">
-            <h1 className="text-4xl font-serif mb-4">
-              {/* UPDATED */}
-              Snovy5 — Shop the Collection
-            </h1>
-
-            <p className="text-muted-foreground max-w-2xl">
-              {/* UPDATED BRAND COPY */}
-              Explore our official Snovy5 apparel line — premium tees, oversized fits, 
-              high-quality cotton, and everyday essentials crafted for modern streetwear.
-            </p>
-          </div>
-        </section>
-
-        {/* ================= SHOP CONTENT ================= */}
-        <section className="py-12">
-          <div className="container-custom">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-
-              {/* ========== MOBILE FILTERS BUTTON ========== */}
-              <div className="lg:hidden flex justify-between items-center mb-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                >
-                  Filters
-                </Button>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    title="Grid View"
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2 ${viewMode === "grid" ? "text-primary" : "text-muted-foreground"}`}
-                  >
-                    <GridIcon size={20} />
-                  </button>
-
-                  <button
-                    title="List View"
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 ${viewMode === "list" ? "text-primary" : "text-muted-foreground"}`}
-                  >
-                    <List size={20} />
-                  </button>
-                </div>
-              </div>
-
-              {/* ====================================================
-                    MOBILE FILTERS DRAWER
-                 ==================================================== */}
-              {mobileFiltersOpen && (
-                <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 flex">
-                  <div className="bg-background w-4/5 max-w-sm h-full overflow-auto p-6 ml-auto">
-
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="font-medium">Filters</h3>
-                      <button
-                        title="Close Filters"
-                        className="text-muted-foreground"
-                        onClick={() => setMobileFiltersOpen(false)}
-                      >
-                        <X size={20} />
-                      </button>
-                    </div>
-
-                    {/* CLEAR FILTERS BUTTON */}
-                    <div className="mb-4">
-                      {(selectedCategories.length > 0 || priceRange[0] > 0 || priceRange[1] < 400) && (
-                        <button
-                          className="text-sm text-muted-foreground hover:text-primary mb-4 block"
-                          onClick={clearFilters}
-                        >
-                          Clear all filters
-                        </button>
-                      )}
-                    </div>
-
-                    {/* ACCORDION FILTERS */}
-                    <Accordion type="multiple" defaultValue={["categories", "price"]}>
-                      {/* CATEGORIES */}
-                      <AccordionItem value="categories">
-                        <AccordionTrigger>Categories</AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2">
-                            {categories.map(category => (
-                              <div key={category.id} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`mobile-${category.id}`}
-                                  checked={selectedCategories.includes(category.name)}
-                                  onCheckedChange={() => toggleCategory(category.name)}
-                                />
-                                <label
-                                  htmlFor={`mobile-${category.id}`}
-                                  className="text-sm cursor-pointer"
-                                >
-                                  {category.name}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-
-                      {/* PRICE RANGE */}
-                      <AccordionItem value="price">
-                        <AccordionTrigger>Price Range</AccordionTrigger>
-                        <AccordionContent>
-                          <div className="px-2 pt-2">
-                            <Slider
-                              defaultValue={[0, 400]}
-                              min={0}
-                              max={400}
-                              step={10}
-                              value={priceRange}
-                              onValueChange={(value) => setPriceRange(value as [number, number])}
-                            />
-                            <div className="flex justify-between mt-4 text-sm">
-                              <span>₹{priceRange[0]}</span>
-                              <span>₹{priceRange[1]}</span>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-
-                    <Button className="w-full mt-6" onClick={() => setMobileFiltersOpen(false)}>
-                      Apply Filters
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* ================= DESKTOP SIDEBAR FILTERS ================= */}
-              <div className="hidden lg:block">
-                <div className="sticky top-24">
-
-                  <div className="flex justify-between items-center mb-8">
-                    <h3 className="font-medium">Filters</h3>
-
-                    {(selectedCategories.length > 0 || priceRange[0] > 0 || priceRange[1] < 400) && (
-                      <button
-                        className="text-sm text-muted-foreground hover:text-primary"
-                        onClick={clearFilters}
-                      >
-                        Clear all
-                      </button>
-                    )}
-                  </div>
+          <section className="py-12">
+            <div className="container-custom">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                <div className="hidden lg:block sticky top-24">
+                  <h3 className="font-medium mb-6">Filters</h3>
 
                   <Accordion type="multiple" defaultValue={["categories", "price"]}>
-
-                    {/* CATEGORY FILTERS */}
                     <AccordionItem value="categories">
                       <AccordionTrigger>Categories</AccordionTrigger>
                       <AccordionContent>
-                        <div className="space-y-2">
-                          {categories.map(category => (
-                            <div key={category.id} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={category.id}
-                                checked={selectedCategories.includes(category.name)}
-                                onCheckedChange={() => toggleCategory(category.name)}
-                              />
-                              <label htmlFor={category.id} className="text-sm cursor-pointer">
-                                {category.name}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
+                        {categories.map((c) => (
+                          <div key={c.id} className="flex items-center space-x-2 mb-2">
+                            <Checkbox
+                              checked={selectedCategories.includes(c.name)}
+                              onCheckedChange={() => toggleCategory(c.name)}
+                            />
+                            <span>{c.name}</span>
+                          </div>
+                        ))}
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* PRICE FILTER */}
                     <AccordionItem value="price">
-                      <AccordionTrigger>Price Range</AccordionTrigger>
+                      <AccordionTrigger>Price</AccordionTrigger>
                       <AccordionContent>
-                        <div className="px-2 pt-2">
-                          <Slider
-                            defaultValue={[0, 400]}
-                            min={0}
-                            max={400}
-                            step={10}
-                            value={priceRange}
-                            onValueChange={(value) => setPriceRange(value as [number, number])}
-                          />
-                          <div className="flex justify-between mt-4 text-sm">
-                            <span>₹{priceRange[0]}</span>
-                            <span>₹{priceRange[1]}</span>
-                          </div>
+                        <Slider
+                          min={0}
+                          max={5000}
+                          step={50}
+                          value={priceRange}
+                          onValueChange={(val) => setPriceRange(val as [number, number])}
+                        />
+                        <div className="flex justify-between mt-4 text-sm">
+                          <span>₹{priceRange[0]}</span>
+                          <span>₹{priceRange[1]}</span>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
-
-                </div>
-              </div>
-
-              {/* ================== PRODUCTS GRID ================== */}
-              <div className="lg:col-span-3">
-
-                {/* Top Bar */}
-                <div className="flex justify-between items-center mb-8">
-                  <p className="text-muted-foreground">
-                    Showing {filteredProducts.length} products
-                  </p>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="hidden lg:flex items-center space-x-2">
-                      <button
-                        title="Grid View"
-                        onClick={() => setViewMode("grid")}
-                        className={`p-2 ${viewMode === "grid" ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        <GridIcon size={20} />
-                      </button>
-
-                      <button
-                        title="List View"
-                        onClick={() => setViewMode("list")}
-                        className={`p-2 ${viewMode === "list" ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        <List size={20} />
-                      </button>
-                    </div>
-
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Sort by" />
-                      </SelectTrigger>
-
-                      <SelectContent>
-                        <SelectItem value="featured">Featured</SelectItem>
-                        <SelectItem value="price-low">Price: Low to High</SelectItem>
-                        <SelectItem value="price-high">Price: High to Low</SelectItem>
-                        <SelectItem value="name">Name</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
-                {/* Active Filters Display */}
-                {(selectedCategories.length > 0 || priceRange[0] > 0 || priceRange[1] < 400) && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {selectedCategories.map(cat => (
-                      <div key={cat} className="bg-secondary text-sm px-3 py-1 rounded-full flex items-center">
-                        {cat}
-                        <button className="ml-2" onClick={() => toggleCategory(cat)}>
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-
-                    {(priceRange[0] > 0 || priceRange[1] < 400) && (
-                      <div className="bg-secondary text-sm px-3 py-1 rounded-full flex items-center">
-                        ₹{priceRange[0]} - ₹{priceRange[1]}
-                        <button className="ml-2" onClick={() => setPriceRange([0, 400])}>
-                          <X size={14} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Product Listing */}
-                {filteredProducts.length > 0 ? (
-                  <div
-                    className={
-                      viewMode === "grid"
-                        ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-                        : "space-y-6"
-                    }
-                  >
-                    {filteredProducts.map(product => (
-                      viewMode === "grid" ? (
-                        <ProductCard key={product.id} product={product} />
-                      ) : (
-                        <div key={product.id} className="flex border-b pb-6">
-                          <div className="w-1/3 aspect-square">
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                          </div>
-
-                          <div className="w-2/3 pl-6">
-                            <h3 className="font-medium text-lg mb-2">{product.name}</h3>
-                            <p className="text-muted-foreground mb-4">₹{product.price}</p>
-                            <p className="text-sm mb-6 line-clamp-3">{product.description}</p>
-                            <Button>View Product</Button>
-                          </div>
-                        </div>
-                      )
+                <div className="lg:col-span-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProducts.map((product) => (
+                      <ProductCard key={product._id} product={product} />
                     ))}
                   </div>
-                ) : (
-                  <div className="text-center py-16">
-                    <h3 className="text-xl mb-2">No products found</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Try adjusting your filters
-                    </p>
-                    <Button onClick={clearFilters}>Clear Filters</Button>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
 
-      <Footer />
-    </div>
-  );
-};
+        <Footer />
+      </div>
+    );
+  };
 
-export default Shop;
+  export default Shop;
