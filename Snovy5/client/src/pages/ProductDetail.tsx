@@ -377,25 +377,38 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetchProductById(productId!);
-        setProduct(res);
+  async function load() {
+    try {
+      const res = await fetchProductById(productId!);
+      setProduct(res);
 
-        const all = await fetchProducts(1, 100);
-        const related = all.data.filter(
-          (p: any) => p.category === res.category && p._id !== res._id
-        );
+      const all = await fetchProducts(1, 200); // fetch more to suggest more products
 
-        setRelatedProducts(related.slice(0, 8)); // More products suggested
-      } catch (err) {
-        console.error("Product load error", err);
-      } finally {
-        setLoading(false);
-      }
+      const related = all.data.filter(
+        (p: any) =>
+          p.category &&
+          res.category &&
+          p.category.toLowerCase() === res.category.toLowerCase() &&
+          p._id !== res._id
+      );
+
+      // If no products found in same category → fallback to random suggestions
+      const suggestions =
+        related.length > 0
+          ? related.slice(0, 12)
+          : all.data.filter((p: any) => p._id !== res._id).slice(0, 12);
+
+      setRelatedProducts(suggestions);
+    } catch (err) {
+      console.error("Product load error", err);
+    } finally {
+      setLoading(false);
     }
-    if (productId) load();
-  }, [productId]);
+  }
+
+  if (productId) load();
+}, [productId]);
+  
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!product) {
@@ -628,16 +641,58 @@ const ProductDetail = () => {
           </Tabs>
 
           {/* Suggested Products */}
-          {relatedProducts.length > 0 && (
-            <div className="mb-20">
-              <h2 className="text-xl font-serif font-semibold mb-5">You May Also Like</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                {relatedProducts.map((rel) => (
-                  <ProductCard key={rel._id} product={rel} />
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Suggested Products */}
+{relatedProducts.length > 0 && (
+  <div className="mb-20">
+    <h2 className="text-xl font-serif font-semibold mb-5">
+      You May Also Like
+    </h2>
+
+    {/* Horizontal Scroll Container */}
+    <div className="relative group">
+      {/* Scroll Buttons */}
+      <button
+        onClick={() =>
+          document.getElementById("suggested-scroll")?.scrollBy({
+            left: -300,
+            behavior: "smooth",
+          })
+        }
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/20 dark:bg-white/20 text-white dark:text-black 
+                  p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
+      >
+        ‹
+      </button>
+
+      <button
+        onClick={() =>
+          document.getElementById("suggested-scroll")?.scrollBy({
+            left: 300,
+            behavior: "smooth",
+          })
+        }
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/20 dark:bg-white/20 text-white dark:text-black 
+                  p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
+      >
+        ›
+      </button>
+
+      {/* Scrollable Row */}
+      <div
+        id="suggested-scroll"
+        className="flex gap-5 overflow-x-auto scroll-smooth hide-scrollbar py-2"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
+        {relatedProducts.map((rel) => (
+          <div key={rel._id} className="min-w-[200px] scroll-snap-align-start">
+            <ProductCard product={rel} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
       </main>
 
