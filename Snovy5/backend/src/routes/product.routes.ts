@@ -23,6 +23,7 @@ const upload = multer({ storage });
 
 // list with pagination, q, category
 productRouter.get("/", async (req, res) => {
+  console.log("first");
   try {
     const q = (req.query.q as string) || "";
     const category = (req.query.category as string) || "";
@@ -55,6 +56,7 @@ productRouter.get("/:id", async (req, res) => {
     if (!prod) return res.status(404).json({ error: "Not found" });
     res.json(prod);
   } catch (err) {
+    console.log(err);
     console.error("product get err", err);
     res.status(500).json({ error: "Server error" });
   }
@@ -141,5 +143,6 @@ productRouter.delete("/deletPro/:id", attachUser, adminOnly, async (req, res) =>
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 export default productRouter;

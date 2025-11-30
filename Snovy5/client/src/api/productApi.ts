@@ -80,3 +80,39 @@ export async function updateProductApi(
 export async function deleteProductApi(id: string): Promise<void> {
   await api.delete(`/admin/products/deletPro/${id}`);
 }
+
+
+export async function fetchCategoriesWithOneProduct() {
+  const categoriesMap: Record<string, string> = {}; // category -> image
+
+  let page = 1;
+  let keepFetching = true;
+
+  while (keepFetching) {
+    const { data, meta } = await fetchProducts(page, 50); // fetch 50 per page
+
+    for (const product of data) {
+      if (product.category && !categoriesMap[product.category]) {
+        // pick first image if available
+        categoriesMap[product.category] = product.images?.[0] || "";
+      }
+    }
+
+    if (page >= meta.pages) {
+      keepFetching = false;
+    } else {
+      page++;
+    }
+  }
+
+  // convert map to desired array
+  const result = Object.entries(categoriesMap).map(([category, image]) => ({
+    id: category.toLowerCase(),
+    name: category,
+    image
+  }));
+
+  return result;
+}
+
+
