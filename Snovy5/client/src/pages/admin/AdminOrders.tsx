@@ -85,7 +85,7 @@ export default function AdminOrders() {
               <div className="pl-4 border-l space-y-2">
                 {order.items.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.productId}
                     className="flex items-center gap-3"
                   >
                     <img

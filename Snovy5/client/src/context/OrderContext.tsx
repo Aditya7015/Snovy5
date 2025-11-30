@@ -23,6 +23,7 @@ interface OrderItem {
 
 interface Order {
   id: string;
+  userId: string; // <-- we use this in AdminOrders
   date: string;
   items: OrderItem[];
   total: number;
@@ -45,12 +46,13 @@ interface OrderContextType {
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
+// ✅ look at both admin_token and token
+const getToken = () =>
+  localStorage.getItem("admin_token") ?? localStorage.getItem("token");
+
 export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const getToken = () => localStorage.getItem("token");
-
-  // Fetch user/admin orders from backend
   const fetchOrders = async () => {
     const token = getToken();
     if (!token) return;
@@ -59,15 +61,30 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await fetch(`${API_URL}/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       if (!res.ok) return;
+
       const data = await res.json();
-      setOrders(data);
+
+      // map backend → frontend shape
+      setOrders(
+        data.map((o: any) => ({
+          id: o.id,
+          userId: o.userId,
+          date: o.date,
+          items: o.items,
+          total: o.total,
+          status: o.status,
+          paymentMethod: o.paymentMethod,
+          shippingAddress: o.shippingAddress,
+          billingAddress: o.billingAddress,
+        }))
+      );
     } catch (error) {
       console.error("Failed to load orders", error);
     }
   };
 
-  // Create COD Order
   const createOrder = async (
     items: any[],
     shippingAddress: OrderAddress,
@@ -108,7 +125,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
     return newOrder as Order;
   };
 
-  // Admin: update status
+  // ✅ always hit admin route for status changes
   const updateOrderStatus = async (id: string, status: string) => {
     const token = getToken();
     if (!token) throw new Error("Not authenticated");
@@ -122,7 +139,10 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       body: JSON.stringify({ status }),
     });
 
-    if (!res.ok) throw new Error("Update failed");
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Update failed");
+    }
 
     await fetchOrders();
   };
