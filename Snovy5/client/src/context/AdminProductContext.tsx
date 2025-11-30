@@ -54,18 +54,32 @@ export const AdminProductProvider: React.FC<{ children: React.ReactNode }> = ({
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // const refreshProducts = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const res = await fetchProducts({ page: 1, limit: 100 });
+  //     setProducts(res.data.map(mapBackendToProduct));
+  //   } catch (err) {
+  //     console.error("Failed to load products:", err);
+  //     toast.error("Failed to load products");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const refreshProducts = async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetchProducts({ page: 1, limit: 100 });
-      setProducts(res.data.map(mapBackendToProduct));
-    } catch (err) {
-      console.error("Failed to load products:", err);
-      toast.error("Failed to load products");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    setIsLoading(true);
+    const res = await fetchProducts(1, 100);
+    setProducts(res.data.map(mapBackendToProduct));
+  } catch (err) {
+    console.error("Failed to load products:", err);
+    toast.error("Failed to load products");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   useEffect(() => {
     refreshProducts();

@@ -27,19 +27,34 @@
     const [sortBy, setSortBy] = useState("featured");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+    // useEffect(() => {
+    //   async function load() {
+    //     try {
+    //       const res = await fetchProducts({ page: 1, limit: 100 });
+    //       const dataArray = res.data || [];
+    //       setProducts(dataArray);
+    //       setFilteredProducts(dataArray);
+    //     } catch (err) {
+    //       console.error("Failed loading products", err);
+    //     }
+    //   }
+    //   load();
+    // }, []);
+
     useEffect(() => {
-      async function load() {
-        try {
-          const res = await fetchProducts({ page: 1, limit: 100 });
-          const dataArray = res.data || [];
-          setProducts(dataArray);
-          setFilteredProducts(dataArray);
-        } catch (err) {
-          console.error("Failed loading products", err);
-        }
-      }
-      load();
-    }, []);
+  async function load() {
+    try {
+      const res = await fetchProducts(1, 100);
+      const dataArray = res.data || [];
+      setProducts(dataArray);
+      setFilteredProducts(dataArray);
+    } catch (err) {
+      console.error("Failed loading products", err);
+    }
+  }
+  load();
+}, []);
+
 
     // Preserve category filter from URL
     useEffect(() => {
