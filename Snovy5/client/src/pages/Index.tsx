@@ -96,6 +96,7 @@ const HomePage = () => {
     async function load() {
       try {
         const res = await fetchProducts();
+        
 setProducts(res.data || []);
 
       } catch (error) {
@@ -149,7 +150,7 @@ setProducts(res.data || []);
 
         {/* Featured Products */}
         {products.length > 0 && (
-          <section ref={featuredRef} className="py-20 bg-secondary">
+          <section ref={featuredRef} className="py-20 bg-transparent">
             <div className="container-custom">
               <h2 className="text-3xl md:text-4xl font-serif mb-10">Featured Products</h2>
 
@@ -168,21 +169,26 @@ setProducts(res.data || []);
 
         {/* New Arrivals */}
         {products.length > 0 && (
-          <section ref={newArrivalsRef} className="py-20">
-            <div className="container-custom">
-              <h2 className="text-3xl md:text-4xl font-serif mb-10">New Arrivals</h2>
+            <section ref={newArrivalsRef} className="py-20">
+    <div className="container-custom">
+      <h2 className="text-3xl md:text-4xl font-serif mb-10">New Collections</h2>
 
-              <div className="marquee reverse">
-                <div className="marquee-content">
-                  {loopedProducts.slice(0, 10).map((product, i) => (
-                    <div key={product._id + "new" + i} className="product-slide">
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-                </div>
+      <div className="marquee reverse">
+        <div className="marquee-content">
+
+          {loopedProducts
+            .filter(product => product?.newproduct === 1) // 👈 filter new products
+            .slice(0, 11)
+            .map((product, i) => (
+              <div key={product._id + "new" + i} className="product-slide">
+                <ProductCard product={product} />
               </div>
-            </div>
-          </section>
+            ))}
+
+        </div>
+      </div>
+    </div>
+  </section>
         )}
 
         <Values />

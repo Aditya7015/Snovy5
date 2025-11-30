@@ -10,6 +10,7 @@ export interface IProduct extends Document {
   stock?: number;
   createdAt?: Date;
   slug?: string;
+  newproduct:Number;
 }
 
 const ProductSchema = new Schema<IProduct>({
@@ -20,7 +21,8 @@ const ProductSchema = new Schema<IProduct>({
   category: { type: String, default: "" },
   stock: { type: Number, default: 0 },
   createdAt: { type: Date, default: () => new Date() },
-  slug: { type: String, index: true }
+  slug: { type: String, index: true },
+  newproduct:{ type:Number, default:0}
 });
 
 // optional: create a simple slug pre-save
