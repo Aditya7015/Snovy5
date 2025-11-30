@@ -15,6 +15,8 @@ import { fetchProducts } from "../api/productApi";
 
 
 const HomePage = () => {
+
+  const [shopclick , setshopclick] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuredRef = useScrollAnimation({ delay: 0.2 });
@@ -47,7 +49,7 @@ setProducts(res.data || []);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header/>
 
       <main className="flex-grow">
         

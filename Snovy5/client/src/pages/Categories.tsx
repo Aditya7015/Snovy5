@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Tags } from "lucide-react";
 import { fetchCategoriesWithOneProduct } from "@/api/productApi";
 
+
 interface Category {
   id: string;
   name: string;
@@ -56,7 +57,7 @@ const Categories = () => {
               {categories.map((category) => (
                 <Link
                   key={category.id}
-                  to={`/category/${category.id}`}
+                  to={`/shop?category=${category.name}`}
                   className="group relative overflow-hidden"
                 >
                   <div className="aspect-[4/3] overflow-hidden">
