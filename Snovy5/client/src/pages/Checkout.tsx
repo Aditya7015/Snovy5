@@ -146,8 +146,8 @@ const Checkout = () => {
         cart,
         shippingAddress,
         billingAddress,
-        formData.paymentMethod,
-        paymentInfo
+        // formData.paymentMethod,
+        // paymentInfo
       );
       clearCart();
       navigate(`/order-confirmation/${order.id}`);
