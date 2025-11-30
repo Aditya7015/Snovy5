@@ -15,10 +15,15 @@ export interface BackendProduct {
 //   return res.data; // <-- backend directly returns array
 //}
 
-export async function fetchProducts(page: number = 1, limit: number = 20): Promise<BackendProduct[]> {
+export async function fetchProducts(
+  page: number = 1,
+  limit: number = 10
+): Promise<{ data: BackendProduct[]; meta: any }> 
+{
   const res = await api.get(`/products?page=${page}&limit=${limit}`);
-  return res.data; // backend returns array
+  return res.data;
 }
+
 
 
 export async function fetchProductById(id: string): Promise<BackendProduct> {
