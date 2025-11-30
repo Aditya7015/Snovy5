@@ -6,7 +6,7 @@ import path from "path";
 import { connectDB } from "./config/db";
 import router from "./routes/auth.routes";
 import productRouter from "./routes/product.routes";
-// import orderRouter from "./routes/order.routes";
+import orderRouter from "./routes/order.routes";
 
 dotenv.config();
 connectDB();
@@ -28,6 +28,9 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // PUBLIC SHOP PRODUCT ROUTES
 app.use("/products", productRouter);
+
+// 🔹 ORDERS ROUTES (user + admin)
+app.use("/", orderRouter); // gives /orders and /admin/orders
 
 // ADMIN PROTECTED ROUTES (CRUD)
 app.use("/admin/products", productRouter);
