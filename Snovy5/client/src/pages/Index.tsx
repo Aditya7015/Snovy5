@@ -13,6 +13,76 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 // import { fetchProducts } from "@/api/productApi";
 import { fetchProducts } from "../api/productApi";
 
+import { motion, AnimatePresence } from "framer-motion";
+
+const heroImages = [
+  "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1500",
+  "https://images.unsplash.com/photo-1520975918318-3e84c4a7db12?q=80&w=1500",
+  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1500",
+  "https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?q=80&w=1500",
+  "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1500",
+];
+
+
+function HeroSlider() {
+  const [index, setIndex] = useState(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    timeoutRef.current = setTimeout(() => {
+      setIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+
+    return () => timeoutRef.current && clearTimeout(timeoutRef.current);
+  }, [index]);
+
+  return (
+    <section className="relative h-[90vh] overflow-hidden">
+      
+      {/* SLIDE IMAGE */}
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={index}
+          src={heroImages[index]}
+          initial={{ opacity: 0, x: 80 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -80 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute w-full h-full object-cover"
+        />
+      </AnimatePresence>
+
+      {/* DARK OVERLAY */}
+      <div className="absolute inset-0 bg-black/40" />
+
+      {/* CONTENT */}
+      <div className="relative container-custom h-full flex flex-col justify-center">
+        <h1 className="text-5xl md:text-7xl text-white font-serif mb-6 max-w-2xl">
+          Define Your Style with Timeless Pieces
+        </h1>
+        <p className="text-white/80 text-xl md:text-2xl mb-8 max-w-xl">
+          Premium fashion designed for a modern lifestyle.
+        </p>
+        <Button size="lg" className="text-lg px-8 max-w-40 mt-10 " asChild>
+          <Link to="/shop">Explore Collection</Link>
+        </Button>
+      </div>
+
+      {/* DOTS NAVIGATION */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-3">
+        {heroImages.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 
+              ${index === i ? "bg-white scale-125" : "bg-white/40"}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 const HomePage = () => {
 
@@ -54,7 +124,7 @@ setProducts(res.data || []);
       <main className="flex-grow">
         
         {/* Hero Section */}
-        <section ref={heroRef} className="relative h-[90vh] overflow-hidden">
+        {/* <section ref={heroRef} className="relative h-[90vh] overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1500"
             className="absolute w-full h-full object-cover"
@@ -71,7 +141,9 @@ setProducts(res.data || []);
               <Link to="/shop">Explore Collection</Link>
             </Button>
           </div>
-        </section>
+        </section> */}
+
+        <HeroSlider></HeroSlider>
 
         <FeaturedCollections />
 
