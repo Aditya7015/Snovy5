@@ -36,8 +36,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const API_BASE =
   import.meta.env.VITE_API_URL ||
   (window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://snovy5-2.onrender.com");
+    ? "http://localhost:5000/user"
+    : "https://snovy5-2.onrender.com/user");
 
 
     // Load saved user on app start
