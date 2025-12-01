@@ -14,12 +14,33 @@ connectDB();
 const app = express();
 app.use(express.json());
 
+// app.use(
+//   cors({
+//     origin: process.env.CORS_ORIGIN || "http://localhost:8080",
+//     credentials: true,
+//   })
+// );
+
+const allowedOrigins = [
+  "https://snovy5.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:8080"
+];
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:8080",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: "GET,POST,PUT,PATCH,DELETE",
     credentials: true,
   })
 );
+
 
 app.use(cookieParser());
 
