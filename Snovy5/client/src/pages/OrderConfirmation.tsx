@@ -16,7 +16,7 @@ const STATUS_STEPS = [
   { key: "pending", label: "Order Placed", Icon: Package },
   { key: "processing", label: "Packed", Icon: Box },
   { key: "shipped", label: "Shipped", Icon: Truck },
-  { key: "delivered", label: "Delivered", Icon: CheckCircle },
+  { key: "delivered", label: "Delivered", Icon: CheckCircle }
 ];
 
 export default function OrderConfirmation() {
@@ -35,7 +35,7 @@ export default function OrderConfirmation() {
       }
 
       const res = await fetch(`${API_URL}/orders/${orderId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       const data = await res.json();
@@ -76,36 +76,53 @@ export default function OrderConfirmation() {
     );
 
   const shipping = order.shippingAddress;
+  const dateLabel = new Date(order.date).toLocaleDateString("en-IN");
+
   const statusIndex = STATUS_STEPS.findIndex(
     (s) => s.key.toLowerCase() === order.status.toLowerCase()
   );
-  const dateLabel = new Date(order.date).toLocaleDateString("en-IN");
+
+  const isCanceled = order.status.toLowerCase() === "canceled";
+  const maxSteps = STATUS_STEPS.length - 1;
+  const progressPercent = isCanceled
+    ? (statusIndex / maxSteps) * 100
+    : (statusIndex / maxSteps) * 100;
 
   return (
     <Page>
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-serif font-semibold">🎉 Order Confirmed</h1>
-        <p className="text-gray-600 mt-2">
-          Thank you for shopping with Snovy5!
+        <h1 className="text-4xl font-serif font-semibold">
+          {isCanceled ? "Order Status Update" : "🎉 Order Confirmed"}
+        </h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
+          {isCanceled
+            ? "This order has been cancelled"
+            : "Thank you for shopping with Snovy5!"}
         </p>
       </div>
 
       {/* MAIN CARD */}
       <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg space-y-8">
 
-        {/* Top Info */}
-        <div className="flex justify-between">
+        {/* Order Info */}
+        <div className="flex justify-between items-start">
           <div>
-            <p className="text-sm font-medium">Order ID:</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Order ID:</p>
             <p className="font-semibold">{order.id}</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Ordered on {dateLabel}
             </p>
           </div>
 
-          <p className="text-sm">
-            Payment: <span className="font-semibold text-green-600">COD</span>
-          </p>
+          <span
+            className={`px-2 py-1 text-sm rounded font-medium ${
+              isCanceled
+                ? "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200"
+                : "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200"
+            }`}
+          >
+            {order.status.toUpperCase()}
+          </span>
         </div>
 
         {/* STATUS TIMELINE */}
@@ -114,17 +131,19 @@ export default function OrderConfirmation() {
 
           <div className="relative flex justify-between text-center">
 
-            {/* Gray track */}
-            <div className="absolute top-4 left-0 h-1 bg-gray-300 w-full rounded"></div>
+            {/* Gray Track */}
+            <div className="absolute top-4 left-0 h-1 bg-gray-300 dark:bg-gray-700 w-full rounded" />
 
-            {/* Progress line */}
+            {/* Actual Progress */}
             <div
-              className="absolute top-4 left-0 h-1 bg-green-500 rounded"
-              style={{ width: `${(statusIndex / 3) * 100}%` }}
-            ></div>
+              className="absolute top-4 left-0 h-1 bg-green-500 rounded transition-all"
+              style={{ width: `${progressPercent}%` }}
+            />
 
             {STATUS_STEPS.map((step, i) => {
-              const active = i <= statusIndex;
+              const active = i <= statusIndex && !isCanceled;
+              const cancelledStop = i === statusIndex && isCanceled;
+
               return (
                 <div key={step.key} className="relative z-10">
                   <div
@@ -132,6 +151,8 @@ export default function OrderConfirmation() {
                       ${
                         active
                           ? "bg-green-500 border-green-600 text-white"
+                          : cancelledStop
+                          ? "bg-red-500 border-red-700 text-white"
                           : "bg-white dark:bg-gray-700 border-gray-400 text-gray-400"
                       }`}
                   >
@@ -139,7 +160,11 @@ export default function OrderConfirmation() {
                   </div>
                   <p
                     className={`mt-2 text-xs ${
-                      active ? "text-green-600" : "text-gray-500"
+                      active
+                        ? "text-green-600"
+                        : cancelledStop
+                        ? "text-red-600"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {step.label}
@@ -150,12 +175,12 @@ export default function OrderConfirmation() {
           </div>
         </div>
 
-        {/* Shipping Address */}
-        <div className="border rounded-lg p-4 space-y-1">
+        {/* SHIPPING ADDRESS */}
+        <div className="border rounded-lg p-4 space-y-1 dark:border-gray-700">
           <p className="font-medium flex items-center gap-2">
             <MapPin size={18} /> Delivery Address
           </p>
-          <p className="text-sm text-gray-700 leading-5">
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-5">
             {shipping.firstName} {shipping.lastName} <br />
             {shipping.street}, {shipping.city} <br />
             {shipping.state} - {shipping.postalCode} <br />
@@ -167,7 +192,10 @@ export default function OrderConfirmation() {
         {/* ORDER ITEMS */}
         <div className="space-y-4">
           {order.items.map((item: any, i: number) => (
-            <div key={i} className="flex justify-between border p-4 rounded-lg">
+            <div
+              key={i}
+              className="flex justify-between border p-4 rounded-lg dark:border-gray-700"
+            >
               <div className="flex items-center gap-3">
                 <img
                   src={item.image}
@@ -175,7 +203,7 @@ export default function OrderConfirmation() {
                 />
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     Qty: {item.quantity}
                   </p>
                 </div>
@@ -190,7 +218,7 @@ export default function OrderConfirmation() {
           Total: ₹{order.total}
         </p>
 
-        {/* ACTIONS */}
+        {/* ACTION BUTTONS */}
         <div className="flex justify-center gap-4 pt-4">
           <Button asChild>
             <Link to="/account/orders">View All Orders</Link>
@@ -208,9 +236,7 @@ function Page({ children }: any) {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="container-custom py-10 flex-grow">
-        {children}
-      </main>
+      <main className="container-custom py-10 flex-grow">{children}</main>
       <Footer />
     </div>
   );

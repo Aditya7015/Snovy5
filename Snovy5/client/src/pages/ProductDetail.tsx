@@ -41,18 +41,23 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [addedToCart, setAddedToCart] = useState(false); // NEW: tracks if this item is in cart
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetchProductById(productId!);
+        if (!productId) return;
+
+        // Scroll to top whenever product changes (including clicking suggested product)
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        const res = await fetchProductById(productId);
         setProduct(res);
         setAddedToCart(false); // reset when product changes
 
         const all = await fetchProducts(1, 200); // fetch more to suggest more products
 
-        const related = all.data.filter(
+        let related = all.data.filter(
           (p: any) =>
             p.category &&
             res.category &&
@@ -60,13 +65,13 @@ const ProductDetail = () => {
             p._id !== res._id
         );
 
-        // If no products found in same category → fallback to random suggestions
-        const suggestions =
-          related.length > 0
-            ? related.slice(0, 12)
-            : all.data.filter((p: any) => p._id !== res._id).slice(0, 12);
+        // Ensure we always show a bunch of suggestions (like Myntra/Flipkart)
+        if (related.length < 10) {
+          const others = all.data.filter((p: any) => p._id !== res._id);
+          related = [...related, ...others].slice(0, 16);
+        }
 
-        setRelatedProducts(suggestions);
+        setRelatedProducts(related);
       } catch (err) {
         console.error("Product load error", err);
       } finally {
@@ -74,15 +79,38 @@ const ProductDetail = () => {
       }
     }
 
-    if (productId) load();
+    load();
   }, [productId]);
 
-  if (loading) return <div className="text-center py-20">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow">
+          <div className="container-custom py-20">
+            <div className="animate-pulse space-y-6">
+              <div className="h-6 w-32 bg-muted rounded" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="h-[400px] bg-muted rounded-lg" />
+                <div className="space-y-4">
+                  <div className="h-8 w-64 bg-muted rounded" />
+                  <div className="h-6 w-24 bg-muted rounded" />
+                  <div className="h-10 w-full bg-muted rounded" />
+                  <div className="h-24 w-full bg-muted rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+
   if (!product) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="container-custom py-20 text-center">
+        <div className="container-custom flex-grow py-20 text-center">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2" /> Back
           </Button>
@@ -113,7 +141,7 @@ const ProductDetail = () => {
       quantity
     );
     toast.success(`${product.name} added to cart`);
-    setAddedToCart(true); // after adding, switch button to "Buy Now"
+    setAddedToCart(true);
   };
 
   const handleWishlistToggle = () => {
@@ -133,21 +161,34 @@ const ProductDetail = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow">
+
+      <main className="flex-grow bg-background">
         <div className="container-custom py-10">
-          <Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-2" size={18} /> Back
-          </Button>
+          {/* Back + breadcrumbish line */}
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="ghost" onClick={() => navigate(-1)}>
+              <ArrowLeft className="mr-2" size={18} /> Back
+            </Button>
+            {product.category && (
+              <p className="text-xs md:text-sm text-muted-foreground">
+                Home / <span className="capitalize">{product.category}</span> /{" "}
+                <span className="font-medium truncate max-w-[180px] inline-block align-bottom">
+                  {product.name}
+                </span>
+              </p>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-14">
-            {/* BIG IMAGE WITH AUTO ZOOM */}
+            {/* LEFT: Image section with zoom */}
             <div className="space-y-4">
               <div
-                className="relative w-full aspect-square overflow-hidden rounded-lg border dark:border-gray-800 cursor-zoom-in"
+                className="relative w-full aspect-square overflow-hidden rounded-xl border dark:border-gray-800 cursor-zoom-in bg-muted"
                 onMouseMove={(e) => {
                   const container = e.currentTarget;
                   const rect = container.getBoundingClientRect();
                   const img = container.querySelector("img") as HTMLImageElement;
+                  if (!img) return;
                   const x = e.clientX - rect.left;
                   const y = e.clientY - rect.top;
                   const xPercent = (x / rect.width) * 100;
@@ -158,14 +199,16 @@ const ProductDetail = () => {
                   const img = e.currentTarget.querySelector(
                     "img"
                   ) as HTMLImageElement;
-                  img.style.transition = "transform 0.3s ease-out";
+                  if (!img) return;
+                  img.style.transition = "transform 0.2s ease-out";
                   img.style.transform = "scale(2)";
                 }}
                 onMouseLeave={(e) => {
                   const img = e.currentTarget.querySelector(
                     "img"
                   ) as HTMLImageElement;
-                  img.style.transition = "transform 0.3s ease-out";
+                  if (!img) return;
+                  img.style.transition = "transform 0.2s ease-out";
                   img.style.transform = "scale(1)";
                 }}
               >
@@ -173,6 +216,11 @@ const ProductDetail = () => {
                   src={gallery[selectedImage]}
                   className="absolute top-0 left-0 w-full h-full object-cover"
                 />
+                {product.newproduct > 0 && (
+                  <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full shadow">
+                    New Arrival
+                  </span>
+                )}
               </div>
 
               {/* Thumbnails */}
@@ -181,9 +229,9 @@ const ProductDetail = () => {
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`border rounded-md overflow-hidden ${
+                    className={`relative border rounded-md overflow-hidden transition-all hover:-translate-y-0.5 ${
                       selectedImage === i
-                        ? "border-primary"
+                        ? "border-primary ring-2 ring-primary/40"
                         : "border-gray-300 dark:border-gray-700"
                     }`}
                   >
@@ -194,50 +242,73 @@ const ProductDetail = () => {
 
               {/* Feature badges */}
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2 border rounded p-2 dark:border-gray-700">
+                <div className="flex items-center gap-2 border rounded-lg p-2 dark:border-gray-700 bg-background/60">
                   <ShieldCheck size={16} className="text-green-500" /> 7 Days
                   Return
                 </div>
-                <div className="flex items-center gap-2 border rounded p-2 dark:border-gray-700">
+                <div className="flex items-center gap-2 border rounded-lg p-2 dark:border-gray-700 bg-background/60">
                   <Truck size={16} className="text-blue-500" /> Fast Delivery
                 </div>
-                <div className="flex items-center gap-2 border rounded p-2 dark:border-gray-700">
+                <div className="flex items-center gap-2 border rounded-lg p-2 dark:border-gray-700 bg-background/60">
                   <RefreshCw size={16} className="text-purple-500" /> Easy
                   Exchange
                 </div>
-                <div className="flex items-center gap-2 border rounded p-2 dark:border-gray-700">
+                <div className="flex items-center gap-2 border rounded-lg p-2 dark:border-gray-700 bg-background/60">
                   <Package size={16} className="text-amber-500" /> Secure
                   Packaging
                 </div>
               </div>
             </div>
 
-            {/* DETAILS */}
+            {/* RIGHT: Details */}
             <div className="space-y-4">
-              <h1 className="text-3xl font-serif font-bold">{product.name}</h1>
+              <div className="flex items-start justify-between gap-4">
+                <h1 className="text-3xl md:text-4xl font-serif font-bold leading-snug">
+                  {product.name}
+                </h1>
+              </div>
 
               <div className="flex items-center gap-3">
                 <span className="text-2xl font-bold text-green-600">
                   ₹{product.price}
                 </span>
                 <span className="text-xs bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-200 px-2 py-1 rounded inline-flex items-center">
-                  4.7 <Star size={12} className="ml-1" />
+                  4.7 <Star size={12} className="ml-1 fill-yellow-400" />
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Inclusive of all taxes
                 </span>
               </div>
 
+              {/* Stock info */}
+              <p className="text-xs text-emerald-600 font-medium">
+                {product.stock && product.stock > 5
+                  ? "In Stock"
+                  : product.stock && product.stock > 0
+                  ? `Hurry! Only ${product.stock} left`
+                  : "Out of stock"}
+              </p>
+
               {/* Size Selector */}
               <div className="space-y-2">
-                <p className="font-medium">Select Size</p>
+                <p className="font-medium flex items-center gap-2">
+                  Select Size{" "}
+                  {selectedSize && (
+                    <span className="text-xs text-muted-foreground">
+                      • Selected: {selectedSize}
+                    </span>
+                  )}
+                </p>
                 <div className="flex gap-3">
                   {SIZES.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 rounded-md border flex items-center justify-center 
+                      className={`w-12 h-12 rounded-md border flex items-center justify-center text-sm font-medium transition-all
                       ${
                         selectedSize === size
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-400 dark:border-gray-700"
+                          ? "border-primary bg-primary text-white shadow-sm"
+                          : "border-gray-400 dark:border-gray-700 hover:border-primary"
                       }`}
                     >
                       {size}
@@ -249,16 +320,18 @@ const ProductDetail = () => {
               {/* Quantity */}
               <div>
                 <p className="font-medium mb-2">Quantity</p>
-                <div className="flex border rounded w-fit">
+                <div className="inline-flex items-center border rounded-lg overflow-hidden">
                   <button
-                    className="px-3 py-2"
+                    className="px-3 py-2 hover:bg-muted"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   >
                     <Minus size={14} />
                   </button>
-                  <span className="px-4 py-2">{quantity}</span>
+                  <span className="px-4 py-2 min-w-[40px] text-center">
+                    {quantity}
+                  </span>
                   <button
-                    className="px-3 py-2"
+                    className="px-3 py-2 hover:bg-muted"
                     onClick={() => setQuantity((q) => q + 1)}
                   >
                     <Plus size={14} />
@@ -289,7 +362,7 @@ const ProductDetail = () => {
                   className="flex-1"
                   onClick={() => {
                     if (addedToCart) {
-                      navigate("/cart"); // now acts as Buy Now
+                      navigate("/cart");
                     } else {
                       handleAddToCart();
                     }
@@ -363,7 +436,7 @@ const ProductDetail = () => {
             </TabsContent>
           </Tabs>
 
-          {/* Extra Enhancements – Static Content */}
+          {/* Product Highlights */}
           <div className="mb-10">
             <h3 className="text-lg font-semibold mb-3">Product Highlights</h3>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1 text-sm">
@@ -374,6 +447,7 @@ const ProductDetail = () => {
             </ul>
           </div>
 
+          {/* Wash Care */}
           <div className="border rounded-lg p-5 mb-10 dark:border-gray-700">
             <h3 className="font-semibold mb-3">Wash Care Instructions</h3>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1 text-sm">
@@ -384,6 +458,7 @@ const ProductDetail = () => {
             </ul>
           </div>
 
+          {/* Size Guide */}
           <div className="mb-10">
             <h3 className="font-semibold mb-3">Size Guide</h3>
             <div className="overflow-x-auto">
@@ -421,6 +496,7 @@ const ProductDetail = () => {
             </div>
           </div>
 
+          {/* Info Note */}
           <div className="mb-10 border-l-4 border-primary pl-5 py-4 bg-secondary/10 dark:border-gray-600 dark:bg-secondary/20">
             <p className="text-sm font-medium">
               This product is checked and packed with love. If you face any
@@ -431,6 +507,7 @@ const ProductDetail = () => {
             </p>
           </div>
 
+          {/* Delivery / Return / Safety */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
             <div className="border rounded-lg p-3 dark:border-gray-700">
               <p className="font-medium">Delivery</p>
@@ -461,7 +538,7 @@ const ProductDetail = () => {
 
               {/* Horizontal Scroll Container */}
               <div className="relative group">
-                {/* Scroll Buttons */}
+                {/* Scroll Buttons (desktop only) */}
                 <button
                   onClick={() =>
                     document.getElementById("suggested-scroll")?.scrollBy({
@@ -469,7 +546,7 @@ const ProductDetail = () => {
                       behavior: "smooth",
                     })
                   }
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/20 dark:bg-white/20 text-white dark:text-black 
+                  className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/20 dark:bg-white/20 text-white dark:text-black 
                   p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
                 >
                   ‹
@@ -482,7 +559,7 @@ const ProductDetail = () => {
                       behavior: "smooth",
                     })
                   }
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/20 dark:bg-white/20 text-white dark:text-black 
+                  className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/20 dark:bg-white/20 text-white dark:text-black 
                   p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
                 >
                   ›
@@ -497,7 +574,7 @@ const ProductDetail = () => {
                   {relatedProducts.map((rel) => (
                     <div
                       key={rel._id}
-                      className="min-w-[200px] scroll-snap-align-start"
+                      className="min-w-[180px] sm:min-w-[200px] md:min-w-[220px] scroll-snap-align-start transition-transform hover:-translate-y-1"
                     >
                       <ProductCard product={rel} />
                     </div>
