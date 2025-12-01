@@ -23,6 +23,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { X, GridIcon, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// 👉 Mobile Filter Drawer
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<any[]>([]);
@@ -142,7 +151,7 @@ const Shop = () => {
           <div className="container-custom">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
 
-              {/* Sidebar Filters */}
+              {/* SIDEBAR - DESKTOP ONLY */}
               <div className="hidden lg:block sticky top-24">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-medium">Filters</h3>
@@ -153,6 +162,7 @@ const Shop = () => {
                   )}
                 </div>
 
+                {/* FILTER CONTENT */}
                 <Accordion
                   type="multiple"
                   defaultValue={["categories", "price"]}
@@ -201,9 +211,75 @@ const Shop = () => {
                 </Button>
               </div>
 
-              {/* Main Product Grid */}
+              {/* MAIN PRODUCT AREA */}
               <div className="lg:col-span-3 space-y-6">
-                
+
+                {/* MOBILE FILTER BUTTON */}
+                <div className="lg:hidden flex justify-end mb-4">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline">Filters</Button>
+                    </SheetTrigger>
+
+                    <SheetContent side="left" className="w-72 p-5 overflow-y-auto">
+                      <SheetHeader>
+                        <SheetTitle>Filters</SheetTitle>
+                      </SheetHeader>
+
+                      <div className="mt-4 space-y-6">
+                        <Accordion type="multiple" defaultValue={["categories"]}>
+                          <AccordionItem value="categories">
+                            <AccordionTrigger>Categories</AccordionTrigger>
+                            <AccordionContent>
+                              {categories.map((c) => (
+                                <label
+                                  key={c.id}
+                                  className="flex items-center space-x-2 mb-2 cursor-pointer"
+                                >
+                                  <Checkbox
+                                    checked={selectedCategories.includes(c.name)}
+                                    onCheckedChange={() => toggleCategory(c.name)}
+                                  />
+                                  <span>{c.name}</span>
+                                </label>
+                              ))}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+
+                        <Accordion type="multiple" defaultValue={["price"]}>
+                          <AccordionItem value="price">
+                            <AccordionTrigger>Price</AccordionTrigger>
+                            <AccordionContent>
+                              <Slider
+                                min={0}
+                                max={5000}
+                                step={50}
+                                value={priceRange}
+                                onValueChange={(val) =>
+                                  setPriceRange(val as [number, number])
+                                }
+                              />
+                              <div className="flex justify-between mt-2 text-sm">
+                                <span>₹{priceRange[0]}</span>
+                                <span>₹{priceRange[1]}</span>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+
+                        <Button
+                          variant="outline"
+                          className="w-full mt-4"
+                          onClick={clearFilters}
+                        >
+                          Clear Filters
+                        </Button>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </div>
+
                 {/* Toolbar */}
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-muted-foreground">
