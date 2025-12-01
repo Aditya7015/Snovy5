@@ -233,7 +233,9 @@ interface OrderContextType {
     billingAddress: OrderAddress
   ) => Promise<Order>;
   updateOrderStatus: (id: string, status: string) => Promise<void>;
+  cancelOrderItem: (orderId: string, itemId: string) => Promise<void>; // 🆕 Added
 }
+
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
@@ -336,14 +338,41 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
     await fetchOrders();
   };
 
+
+  const cancelOrderItem = async (orderId: string, itemId: string) => {
+  const token = getToken();
+  if (!token) throw new Error("Not authenticated");
+
+  try {
+    const res = await fetch(`${API_URL}/orders/${orderId}/items/${itemId}/cancel`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Failed to cancel item");
+    }
+
+    await fetchOrders(); // Refresh UI
+  } catch (error) {
+    console.error("Cancel item failed:", error);
+  }
+};
+
+
   useEffect(() => {
     fetchOrders();
   }, []);
 
   return (
     <OrderContext.Provider
-      value={{ orders, fetchOrders, createOrder, updateOrderStatus }}
-    >
+  value={{ orders, fetchOrders, createOrder, updateOrderStatus, cancelOrderItem }}
+>
+
       {children}
     </OrderContext.Provider>
   );

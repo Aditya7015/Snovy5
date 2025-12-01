@@ -28,7 +28,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function AccountOrders() {
-  const { orders, fetchOrders, updateOrderStatus } = useOrder();
+  const { orders, fetchOrders } = useOrder();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -38,6 +38,36 @@ export default function AccountOrders() {
   const copyOrderId = (id: string) => {
     navigator.clipboard.writeText(id);
     toast.success("Order ID copied!");
+  };
+
+  const cancelOrder = async (orderId: string) => {
+    const token =
+      localStorage.getItem("admin_token") ?? localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Login required!");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/orders/${orderId}/cancel`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to cancel order");
+
+      toast.success("Order canceled successfully!");
+      fetchOrders();
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong!");
+    }
   };
 
   if (!orders) {
@@ -143,10 +173,8 @@ export default function AccountOrders() {
                     <div className="text-sm">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-xs text-muted-foreground">
-  Size: <span>{item.size || "-"}</span> • {item.quantity} × ₹{item.price}
-</p>
-
-
+                        Size: <span>{item.size || "-"}</span> • {item.quantity} × ₹{item.price}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -154,7 +182,6 @@ export default function AccountOrders() {
 
               {/* Lower Section */}
               <div className="flex flex-wrap justify-between mt-6 text-sm">
-
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin size={16} />
                   <span>
@@ -164,7 +191,8 @@ export default function AccountOrders() {
                 </div>
 
                 <p className="font-medium">
-                  Pay: ₹{order.total} • <span className="text-green-600">COD</span>
+                  Pay: ₹{order.total} •{" "}
+                  <span className="text-green-600">COD</span>
                 </p>
               </div>
 
@@ -173,9 +201,7 @@ export default function AccountOrders() {
                 {order.status === "pending" && (
                   <Button
                     variant="destructive"
-                    onClick={() =>
-                      updateOrderStatus(order.id, "canceled")
-                    }
+                    onClick={() => cancelOrder(order.id)}
                   >
                     Cancel Order
                   </Button>
