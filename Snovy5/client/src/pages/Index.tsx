@@ -16,11 +16,11 @@ import { fetchProducts } from "../api/productApi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const heroImages = [
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1500",
-  "https://images.unsplash.com/photo-1520975918318-3e84c4a7db12?q=80&w=1500",
+  "https://img.freepik.com/premium-photo/display-t-sh…moon-sign-that-says-moon_974629-463546.jpg?w=1060",
+  "https://img.freepik.com/premium-photo/shirt-that-h…-shirt-that-says-t-shirt_1086760-81334.jpg?w=1060",
   "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1500",
-  "https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?q=80&w=1500",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1500",
+  "https://img.freepik.com/premium-photo/shirts-new-season-are-displayed-this-image_1213494-12327.jpg?w=1060",
+  "https://img.freepik.com/premium-photo/black-shirt-…hat-it-that-says-t-shirt_1086760-85066.jpg?w=1060",
 ];
 
 
