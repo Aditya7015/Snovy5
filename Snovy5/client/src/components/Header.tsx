@@ -249,7 +249,7 @@ const Header = () => {
         {/* Back Button (Mobile Only & Only When Route Allows) */}
         {shouldShowBack && (
           <button
-            className="p-2 md:hidden"
+            className="p-2 "
             onClick={() => navigate(-1)}
             aria-label="Go back"
           >
@@ -299,7 +299,7 @@ const Header = () => {
           {/* Account Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-2 hidden sm:block">
+              <button className="p-2  sm:block">
                 <User size={20} />
               </button>
             </DropdownMenuTrigger>
@@ -359,6 +359,9 @@ const Header = () => {
             <Link className="block" to="/categories" onClick={() => setIsMenuOpen(false)}>Categories</Link>
             <Link className="block" to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
             <Link className="block" to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+            <Link to="/wishlist" className=" sm:block p-2">
+            <Heart size={20} />
+          </Link>
           </nav>
         </div>
       )}
