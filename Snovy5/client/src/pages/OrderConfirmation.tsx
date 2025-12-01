@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CheckCircle, Box, MapPin, Truck, Package } from "lucide-react";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://snovy5-2.onrender.com");
+
 
 // Same token checker used everywhere
 const getToken = () =>
