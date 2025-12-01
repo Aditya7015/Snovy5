@@ -159,4 +159,48 @@ router.patch(
   }
 );
 
+
+
+/* CANCEL A SINGLE ITEM FROM ORDER */
+router.patch("/orders/:orderId/items/:itemId/cancel", attachUser, async (req, res) => {
+  const user = (req as any).user;
+  const { orderId, itemId } = req.params;
+
+  const order = await Order.findById(orderId);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  if (!user.isAdmin && order.userId.toString() !== user._id.toString()) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  // find item
+  const item = order.items.find((i: any) => i._id.toString() === itemId);
+  if (!item) return res.status(404).json({ error: "Item not found" });
+
+  // if already canceled - ignore
+  if ((item as any).isCanceled) {
+    return res.json(format(order));
+  }
+
+  (item as any).isCanceled = true;
+  (item as any).status = "canceled"; // optional
+
+  // Recalculate total only for active items
+  const subtotal = order.items.reduce(
+    (sum: number, i: any) =>
+      i.isCanceled ? sum : sum + i.price * i.quantity,
+    0
+  );
+  const shipping = subtotal >= 999 ? 0 : 49;
+  order.total = subtotal + shipping;
+
+  // If all canceled → cancel full order
+  const allCanceled = order.items.every((i: any) => i.isCanceled);
+  if (allCanceled) order.status = "canceled";
+
+  await order.save();
+  res.json(format(order));
+});
+
+
 export default router;
