@@ -1,3 +1,48 @@
+// // import { RequestHandler } from "express";
+// // import jwt from "jsonwebtoken";
+// // import User from "../models/User";
+
+// // const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret";
+
+// // export interface AuthPayload {
+// //   id: string;
+// //   email: string;
+// //   isAdmin?: boolean;
+// //   iat?: number;
+// //   exp?: number;
+// // }
+
+// // export const attachUser: RequestHandler = async (req, res, next) => {
+// //   try {
+// //     const auth = req.headers.authorization || req.cookies?.token;
+// //     if (!auth) return res.status(401).json({ error: "Missing Authorization" });
+
+// //     const token = (auth as string).startsWith("Bearer ") ? (auth as string).split(" ")[1] : auth;
+// //     const payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
+// //     if (!payload?.id) return res.status(401).json({ error: "Invalid token" });
+
+// //     // fetch user or admin flag from DB
+// //     const user = await User.findById(payload.id).select("-password").lean();
+// //     if (!user) return res.status(401).json({ error: "User not found" });
+
+// //     (req as any).user = { ...user, isAdmin: payload.isAdmin || user.isAdmin };
+// //     console.log(user);
+// //     next();
+// //   } catch (err: any) {
+// //     console.error("attachUser err", err?.message || err);
+// //     return res.status(401).json({ error: "Unauthorized" });
+// //   }
+// // };
+
+// // export const adminOnly: RequestHandler = (req, res, next) => {
+// //   const user = (req as any).user;
+// //   console.log(user);
+// //   if (!user || !user.isAdmin) return res.status(403).json({ error: "Admin only" });
+// //   next();
+// // };
+
+
+
 // import { RequestHandler } from "express";
 // import jwt from "jsonwebtoken";
 // import User from "../models/User";
@@ -14,33 +59,59 @@
 
 // export const attachUser: RequestHandler = async (req, res, next) => {
 //   try {
-//     const auth = req.headers.authorization || req.cookies?.token;
-//     if (!auth) return res.status(401).json({ error: "Missing Authorization" });
+//     // 1️⃣ Get token from Header, Cookie or Body
+//     const authHeader = req.headers.authorization;
+//     const bodyToken = req.body?.token;
+//     const cookieToken = req.cookies?.token;
 
-//     const token = (auth as string).startsWith("Bearer ") ? (auth as string).split(" ")[1] : auth;
+//     let token: string | null = null;
+
+//     if (authHeader?.startsWith("Bearer ")) {
+//       token = authHeader.split(" ")[1];
+//     } else if (authHeader) {
+//       token = authHeader;
+//     } else if (bodyToken) {
+//       token = bodyToken;
+//     } else if (cookieToken) {
+//       token = cookieToken;
+//     }
+    
+//     console.log(token);
+//     if (!token) {
+//       return res.status(401).json({ error: "Token missing" });
+//     }
+
+//     // 2️⃣ Verify token
 //     const payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
-//     if (!payload?.id) return res.status(401).json({ error: "Invalid token" });
+//     if (!payload?.id) {
+//       return res.status(401).json({ error: "Invalid token" });
+//     }
 
-//     // fetch user or admin flag from DB
+//     // 3️⃣ Fetch user from DB
 //     const user = await User.findById(payload.id).select("-password").lean();
-//     if (!user) return res.status(401).json({ error: "User not found" });
+//     if (!user) {
+//       return res.status(401).json({ error: "User not found" });
+//     }
 
+//     // 4️⃣ Attach user to req
 //     (req as any).user = { ...user, isAdmin: payload.isAdmin || user.isAdmin };
-//     console.log(user);
+
 //     next();
 //   } catch (err: any) {
-//     console.error("attachUser err", err?.message || err);
+//     console.error("attachUser error:", err.message || err);
 //     return res.status(401).json({ error: "Unauthorized" });
 //   }
 // };
 
 // export const adminOnly: RequestHandler = (req, res, next) => {
 //   const user = (req as any).user;
-//   console.log(user);
-//   if (!user || !user.isAdmin) return res.status(403).json({ error: "Admin only" });
+
+//   if (!user || !user.isAdmin) {
+//     return res.status(403).json({ error: "Admin only" });
+//   }
+
 //   next();
 // };
-
 
 
 import { RequestHandler } from "express";
@@ -59,56 +130,41 @@ export interface AuthPayload {
 
 export const attachUser: RequestHandler = async (req, res, next) => {
   try {
-    // 1️⃣ Get token from Header, Cookie or Body
-    const authHeader = req.headers.authorization;
-    const bodyToken = req.body?.token;
-    const cookieToken = req.cookies?.token;
+    // Get token from Authorization header or cookie
+    const auth = req.headers.authorization || req.cookies?.token;
 
-    let token: string | null = null;
-
-    if (authHeader?.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-    } else if (authHeader) {
-      token = authHeader;
-    } else if (bodyToken) {
-      token = bodyToken;
-    } else if (cookieToken) {
-      token = cookieToken;
-    }
-    
-    console.log(token);
-    if (!token) {
-      return res.status(401).json({ error: "Token missing" });
+    if (!auth) {
+      return res.status(401).json({ error: "Missing Authorization" });
     }
 
-    // 2️⃣ Verify token
+    const token =
+      typeof auth === "string" && auth.startsWith("Bearer ")
+        ? auth.split(" ")[1]
+        : (auth as string);
+
     const payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
     if (!payload?.id) {
       return res.status(401).json({ error: "Invalid token" });
     }
 
-    // 3️⃣ Fetch user from DB
     const user = await User.findById(payload.id).select("-password").lean();
     if (!user) {
       return res.status(401).json({ error: "User not found" });
     }
 
-    // 4️⃣ Attach user to req
     (req as any).user = { ...user, isAdmin: payload.isAdmin || user.isAdmin };
 
     next();
   } catch (err: any) {
-    console.error("attachUser error:", err.message || err);
+    console.error("attachUser err", err?.message || err);
     return res.status(401).json({ error: "Unauthorized" });
   }
 };
 
 export const adminOnly: RequestHandler = (req, res, next) => {
   const user = (req as any).user;
-
   if (!user || !user.isAdmin) {
     return res.status(403).json({ error: "Admin only" });
   }
-
   next();
 };
