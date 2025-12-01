@@ -6,10 +6,10 @@ pnpm-debug.log*
 package-lock.json
 npm-debug.log
 
-# # Env files
-# .env
-# .env.local
-# .env.*.local
+# Env files (DO NOT PUSH TO GITHUB)
+.env
+.env.local
+.env.*.local
 
 # Logs
 logs
