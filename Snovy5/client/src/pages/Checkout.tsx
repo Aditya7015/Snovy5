@@ -1097,7 +1097,7 @@ const Checkout = () => {
 
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>{freeShipping ? "Free" : `₹${SHIPPING_COST}`}</span>
+                    <span>{freeShipping ? "Free" : `${SHIPPING_COST}`}</span>
                   </div>
 
                   {freeShipping && (
