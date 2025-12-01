@@ -143,8 +143,10 @@ export default function AccountOrders() {
                     <div className="text-sm">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.quantity} × ₹{item.price}
-                      </p>
+  Size: <span>{item.size || "-"}</span> • {item.quantity} × ₹{item.price}
+</p>
+
+
                     </div>
                   </div>
                 ))}

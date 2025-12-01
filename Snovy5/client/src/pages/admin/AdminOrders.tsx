@@ -215,26 +215,38 @@ export default function AdminOrders() {
               </div>
 
               {/* ITEMS */}
-              <div className="mt-5 flex gap-4 overflow-x-auto pb-3">
-                {order.items.map((item) => (
-                  <div
-                    key={item.productId}
-                    className="border rounded-lg p-2 bg-white dark:bg-gray-700 w-32 flex-shrink-0"
-                  >
-                    <img
-                      src={item.image}
-                      className="w-16 h-16 object-cover mx-auto rounded"
-                      alt={item.name}
-                    />
-                    <p className="text-xs font-medium text-center mt-2 line-clamp-2">
-                      {item.name}
-                    </p>
-                    <p className="text-[10px] text-center text-muted-foreground">
-                      Qty: {item.quantity}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              {/* ITEMS */}
+<div className="mt-5 flex gap-4 overflow-x-auto pb-3">
+  {order.items.map((item) => (
+    <div
+      key={item.productId}
+      className="border rounded-lg p-2 bg-white dark:bg-gray-700 w-32 flex-shrink-0"
+    >
+      <img
+        src={item.image}
+        className="w-16 h-16 object-cover mx-auto rounded"
+        alt={item.name}
+      />
+      <p className="text-xs font-medium text-center mt-2 line-clamp-2">
+        {item.name}
+      </p>
+
+      {/* 🆕 SIZE DISPLAY */}
+      <div className="text-center mt-1">
+        <Badge variant="outline" className="text-[10px] px-1 py-0.5">
+          Size: {item.size || "—"}
+        </Badge>
+      </div>
+
+      {/* Quantity */}
+      <p className="text-[10px] text-center text-muted-foreground mt-0.5">
+        Qty: {item.quantity}
+      </p>
+
+    </div>
+  ))}
+</div>
+
             </Card>
           ))
         )}

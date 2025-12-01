@@ -210,7 +210,7 @@ export default function OrderConfirmation() {
                 <div>
                   <p className="font-medium">{item.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Qty: {item.quantity}
+                    Size: {item.size || "-"} • Qty: {item.quantity}
                   </p>
                 </div>
               </div>
