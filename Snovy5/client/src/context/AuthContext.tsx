@@ -13,7 +13,6 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
-    isAdmin:boolean;
     phone?: string;
     address?: UserAddress;
 }

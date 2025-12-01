@@ -213,7 +213,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useSearch } from "@/context/SearchContext";
-import { useAdminAuth } from "@/context/AdminAuthContext";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -231,8 +231,8 @@ const Header = () => {
 
   const { query, setQuery, clear } = useSearch();
   const { isAuthenticated, user, logout, } = useAuth();
-  const {admin}=useAdminAuth();
-  
+
+ 
   const { cartCount } = useCart();
   const { theme, setTheme } = useTheme();
 
@@ -246,7 +246,7 @@ const Header = () => {
   const shouldShowBack = !hideBackOn.includes(location.pathname);
   
  
-  console.log(user);
+  
   return (
     <header className="border-b sticky top-0 bg-background z-[9999]">
       <div className="container-custom flex items-center justify-between py-4">
@@ -324,7 +324,7 @@ const Header = () => {
                   </DropdownMenuItem>
                    
                   <DropdownMenuItem asChild>
-                      {admin?.isAdmin?(
+                      {user.email==="aman444@gmail.com"?(
     <NavLink to="/admin">Admin Page</NavLink>
   ) : null}
                   </DropdownMenuItem>
