@@ -26,6 +26,41 @@ const format = (o: any) => ({
 });
 
 /* CREATE ORDER - COD only */
+// router.post(
+//   "/orders",
+//   attachUser,
+//   body("items").isArray({ min: 1 }),
+//   check,
+//   async (req: Request, res: Response) => {
+//     try {
+//       const user = (req as any).user;
+//       const { items, shippingAddress, billingAddress } = req.body;
+
+//       const subtotal = items.reduce(
+//         (sum: number, item: any) => sum + item.price * item.quantity,
+//         0
+//       );
+//       const shippingCost = subtotal >= 999 ? 0 : 49;
+//       const total = subtotal + shippingCost;
+
+//       const order = await Order.create({
+//         userId: user._id,
+//         items,
+//         shippingAddress,
+//         billingAddress,
+//         total,
+//         paymentMethod: "cod",
+//         status: "pending",
+//       });
+
+//       res.status(201).json(format(order));
+//     } catch (e) {
+//       console.error(e);
+//       res.status(500).json({ error: "Error creating order" });
+//     }
+//   }
+// );
+
 router.post(
   "/orders",
   attachUser,
@@ -45,7 +80,14 @@ router.post(
 
       const order = await Order.create({
         userId: user._id,
-        items,
+        items: items.map((item: any) => ({
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          size: item.size, // ⭐ now saved correctly
+        })),
         shippingAddress,
         billingAddress,
         total,
@@ -60,6 +102,7 @@ router.post(
     }
   }
 );
+
 
 /* USER: get own orders */
 router.get("/orders", attachUser, async (req: Request, res: Response) => {
