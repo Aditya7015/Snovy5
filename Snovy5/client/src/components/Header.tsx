@@ -194,7 +194,7 @@
 
 // src/components/Header.tsx
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ShoppingCart,
   Menu,
@@ -205,6 +205,7 @@ import {
   LogOut,
   Sun,
   Moon,
+  ArrowLeft,
 } from "lucide-react";
 import { Input } from "./ui/input";
 import SearchResults from "./SearchResults";
@@ -224,6 +225,9 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const { query, setQuery, clear } = useSearch();
   const { isAuthenticated, user, logout } = useAuth();
   const { cartCount } = useCart();
@@ -234,10 +238,25 @@ const Header = () => {
     clear();
   };
 
+  // 🚀 Hide Back Button on these routes
+  const hideBackOn = ["/"]; // add more if needed
+  const shouldShowBack = !hideBackOn.includes(location.pathname);
+
   return (
     <header className="border-b sticky top-0 bg-background z-[9999]">
       <div className="container-custom flex items-center justify-between py-4">
-        
+
+        {/* Back Button (Mobile Only & Only When Route Allows) */}
+        {shouldShowBack && (
+          <button
+            className="p-2 md:hidden"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+          >
+            <ArrowLeft size={22} />
+          </button>
+        )}
+
         {/* Mobile Menu Button */}
         <button
           className="md:hidden p-2"
@@ -266,7 +285,8 @@ const Header = () => {
             <Search size={20} />
           </button>
 
-          <button className="p-2"
+          <button
+            className="p-2"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           >
             {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
@@ -291,8 +311,12 @@ const Header = () => {
                     Hello, {user?.firstName}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild><Link to="/account">My Account</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link to="/account/orders">My Orders</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account">My Account</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account/orders">My Orders</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
                     <LogOut size={16} className="mr-2" /> Logout
@@ -300,8 +324,12 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <DropdownMenuItem asChild><Link to="/account">Sign In</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link to="/account?register=true">Register</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account">Sign In</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account?register=true">Register</Link>
+                  </DropdownMenuItem>
                 </>
               )}
             </DropdownMenuContent>
@@ -319,7 +347,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* 📌 FIXED Mobile Menu Layout */}
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 bg-background z-[9998] px-6 py-6">
           <button className="p-2 mb-8" onClick={() => setIsMenuOpen(false)}>
@@ -366,3 +394,5 @@ const Header = () => {
 };
 
 export default Header;
+
+
