@@ -150,3 +150,14 @@
 .glass-card {
   @apply bg-white/15 dark:bg-gray-900/15 backdrop-blur-xl border border-white/20 shadow-lg transition hover:shadow-2xl;
 }
+
+
+/* fade animation */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
