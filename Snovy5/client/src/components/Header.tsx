@@ -281,12 +281,12 @@ const Header = () => {
         <Search size={20} />
       </button>
 
-      <button
+      {/* <button
         className="p-2"
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       >
         {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-      </button>
+      </button> */}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -431,6 +431,7 @@ const Header = () => {
         <Link className="block" to="/shop" onClick={() => setIsMenuOpen(false)}>Shop</Link>
         <Link className="block" to="/categories" onClick={() => setIsMenuOpen(false)}>Categories</Link>
         <Link className="block" to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
+        <Link className="block" to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
 
         <Link to="/cart" className="relative p-2">
           <ShoppingCart size={20} />
@@ -441,10 +442,18 @@ const Header = () => {
           )}
         </Link>
 
-        <Link className="block" to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+        
         <Link to="/wishlist" className="p-2">
           <Heart size={20} />
         </Link>
+
+        <button
+        className="p-2"
+        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      >
+        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+      </button>
+
       </nav>
     </div>
   )}
