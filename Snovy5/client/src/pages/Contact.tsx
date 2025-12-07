@@ -143,7 +143,7 @@ const Contact = () => {
                     <div>
                       <h3 className="font-medium mb-2">Our Location</h3>
                       <p className="text-muted-foreground">
-                        Snoovy
+                        Snovy5
                         <br />
                         GCET, Greater Noida, UP, India
                       </p>
@@ -154,7 +154,7 @@ const Contact = () => {
                     <Phone size={24} className="text-primary mr-4" />
                     <div>
                       <h3 className="font-medium mb-2">Phone</h3>
-                      <p className="text-muted-foreground">+91 7777048666</p>
+                      <p className="text-muted-foreground">+91 9616008169</p>
                     </div>
                   </div>
 
@@ -163,7 +163,7 @@ const Contact = () => {
                     <div>
                       <h3 className="font-medium mb-2">Email</h3>
                       <p className="text-muted-foreground">
-                        snovy589@gmail.com
+                        shivamgiri2020@gmail.com
                       </p>
                     </div>
                   </div>
@@ -186,11 +186,12 @@ const Contact = () => {
                 <div className="mt-8 pt-8 border-t">
                   <h3 className="font-medium mb-4">Follow Us</h3>
                   <div className="flex space-x-4">
-                    {["Instagram", "Facebook", "Pinterest", "Twitter"].map(
+                    {["Instagram", "Facebook"].map(
                       (social) => (
                         <a
+                          target="blank"
                           key={social}
-                          href="#"
+                          href="https://www.instagram.com/snovy5_?igsh=MXRlcXJrcG1qd2hmNQ=="
                           className="px-4 py-2 border rounded hover:bg-secondary transition-colors"
                         >
                           {social}

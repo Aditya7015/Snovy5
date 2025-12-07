@@ -58,20 +58,20 @@ const Footer = () => {
 
             <div className="mt-4 space-y-2 text-sm text-muted-foreground">
               <p>Greater Noida, Uttar Pradesh</p>
-              <p>Phone: +91 98765 43210</p> {/* Dummy number */}
-              <p>Email: support@snovy5.com</p> {/* Dummy email */}
+              <p>Phone: +91 9616008169</p> {/* Dummy number */}
+              <p>Email: shivamgiri2020@gmail.com</p> {/* Dummy email */}
             </div>
 
             <div className="mt-4 flex space-x-4">
-              <a href="#" className="hover:text-primary" aria-label="Facebook">
+              <a target="blank" href="https://www.instagram.com/snovy5_?igsh=MXRlcXJrcG1qd2hmNQ==" className="hover:text-primary" aria-label="Facebook">
                 <Facebook size={18} />
               </a>
-              <a href="#" className="hover:text-primary" aria-label="Instagram">
+              <a target="blank" href="https://www.instagram.com/snovy5_?igsh=MXRlcXJrcG1qd2hmNQ==" className="hover:text-primary" aria-label="Instagram">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="hover:text-primary" aria-label="Twitter">
+              {/* <a href="#" className="hover:text-primary" aria-label="Twitter">
                 <Twitter size={18} />
-              </a>
+              </a> */}
             </div>
           </div>
 
@@ -102,9 +102,11 @@ const Footer = () => {
             <h4 className="font-medium mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
               <li>
+                
                 <Link to="/contact" className="text-muted-foreground hover:text-primary">
                   Contact Us
                 </Link>
+                
               </li>
               <li>
                 <Link to="/#" className="text-muted-foreground hover:text-primary">

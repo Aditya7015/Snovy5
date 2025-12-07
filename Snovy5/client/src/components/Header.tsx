@@ -269,9 +269,10 @@ const Header = () => {
     {/* MOBILE CENTER LOGO — PERFECTLY CENTERED */}
     <Link
       to="/"
-      className="absolute left-1/2 -translate-x-1/2 text-red-700 font-serif text-2xl font-medium "
+      className="absolute left-1/2 -translate-x-1/2 text-red-700 font-serif"
     >
-      <img src="https://snovy5.com/cdn/shop/files/1000015704.png?v=1745060632&width=70"></img>
+      <img className="w-[80px]" src="/image.png"></img>
+    
     </Link>
 
     {/* Right Icons */}
@@ -349,7 +350,7 @@ const Header = () => {
       to="/"
       className="font-serif text-2xl font-medium"
     >
-            <img className=" w-20 " src="https://snovy5.com/cdn/shop/files/1000015704.png?v=1745060632"></img>
+            <img className=" w-20 " src="/image.png"></img>
 
     </Link>
 

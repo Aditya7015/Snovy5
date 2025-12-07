@@ -162,19 +162,19 @@ const About = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
-                  name: "Alex Chen",
+                  name: "Shivam Giri ",
                   role: "Founder & Creative Director",
                   image:
                     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400",
                 },
                 {
-                  name: "Jessica Miller",
+                  name: "Shivam Giri",
                   role: "Head of Design",
                   image:
                     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400",
                 },
                 {
-                  name: "Ryan Garcia",
+                  name: "Shivam Giri",
                   role: "Operations Lead",
                   image:
                     "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?q=80&w=400",
