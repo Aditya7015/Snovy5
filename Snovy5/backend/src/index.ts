@@ -96,10 +96,12 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "https://snovy5.vercel.app",
+  "https://snovy5.com",
+  "https://www.snovy5.com",
   "http://localhost:5173",
-  "http://localhost:8080",
-  "http://snovy5.com"
+  "http://localhost:8080"
 ];
+
 
 app.use(
   cors({
