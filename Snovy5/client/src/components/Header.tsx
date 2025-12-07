@@ -269,7 +269,7 @@ const Header = () => {
     {/* MOBILE CENTER LOGO — PERFECTLY CENTERED */}
     <Link
       to="/"
-      className="absolute left-1/2 -translate-x-1/2 text-red-700 font-serif"
+      className="absolute  left-1/2 -translate-x-1/2 text-red-700 font-serif"
     >
       <img className="w-[80px]" src="/image.png"></img>
     
