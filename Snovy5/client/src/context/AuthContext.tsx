@@ -13,9 +13,11 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
+    isAdmin: boolean;   // ⭐ REQUIRED
     phone?: string;
     address?: UserAddress;
 }
+
 
 interface AuthContextType {
     user: User | null;

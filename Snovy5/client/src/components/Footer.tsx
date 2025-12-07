@@ -215,7 +215,7 @@ const Footer = () => {
 
 </div>
 
-<div className="mt-6 text-center">
+{/* <div className="mt-6 text-center">
   <Link
     to="/admin"
     className="
@@ -243,7 +243,7 @@ const Footer = () => {
       <polyline points="12 5 19 12 12 19"></polyline>
     </svg>
   </Link>
-</div>
+</div> */}
 
 
       </div>
