@@ -249,158 +249,224 @@ const Header = () => {
   
   return (
     <header className="border-b sticky top-0 bg-background z-[9999]">
-      <div className="container-custom flex items-center justify-between py-4">
 
-        {/* Back Button (Mobile Only & Only When Route Allows) */}
-        {shouldShowBack && (
-          <button
-            className="p-2 "
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <ArrowLeft size={22} />
-          </button>
-        )}
+  {/* MOBILE HEADER (ONLY for screens < md) */}
+  <div className="container-custom flex items-center  justify-between py-5 md:hidden relative">
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2"
-          onClick={() => setIsMenuOpen(true)}
-          aria-label="Toggle menu"
-        >
-          <Menu size={22} />
+    {/* Left Side (Menu or Back) */}
+    <div className="flex items-center space-x-2">
+      <button className="p-2" onClick={() => setIsMenuOpen(true)}>
+        <Menu size={22} />
+      </button>
+
+      {shouldShowBack && (
+        <button className="p-2" onClick={() => navigate(-1)}>
+          <ArrowLeft size={22} />
         </button>
+      )}
+    </div>
 
-        {/* Logo */}
-        <Link to="/" className="flex-1 md:flex-initial font-serif text-2xl font-medium">
-          Snovy5
+    {/* MOBILE CENTER LOGO — PERFECTLY CENTERED */}
+    <Link
+      to="/"
+      className="absolute left-1/2 -translate-x-1/2 text-red-700 font-serif text-2xl font-medium "
+    >
+      <img src="https://snovy5.com/cdn/shop/files/1000015704.png?v=1745060632&width=70"></img>
+    </Link>
+
+    {/* Right Icons */}
+    <div className="flex items-center space-x-3">
+      <button className="p-2" onClick={toggleSearch}>
+        <Search size={20} />
+      </button>
+
+      <button
+        className="p-2"
+        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      >
+        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+      </button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="p-2">
+            <User size={20} />
+          </button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-40 z-[99999]">
+          {isAuthenticated ? (
+            <>
+              <DropdownMenuItem className="text-xs opacity-70">
+                Hello, {user?.firstName}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/account">My Account</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/account/orders">My Orders</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout}>
+                <LogOut size={16} className="mr-2" /> Logout
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem asChild>
+                <Link to="/account">Sign In</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/account?register=true">Register</Link>
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  </div>
+
+  {/* DESKTOP HEADER (md and above) */}
+  <div className="container-custom  hidden md:flex items-center justify-between">
+
+    {/* Left Navigation */}
+    <nav className="flex items-center space-x-8">
+      {shouldShowBack && (
+        <button className="p-2" onClick={() => navigate(-1)}>
+          <ArrowLeft size={22} />
+        </button>
+      )}
+
+      <Link to="/shop">Shop</Link>
+      <Link to="/categories">Categories</Link>
+      <Link to="/about">About</Link>
+      <Link to="/contact">Contact</Link>
+    </nav>
+
+    {/* Desktop Center Logo — Normal Position */}
+    <Link
+      to="/"
+      className="font-serif text-2xl font-medium"
+    >
+            <img className=" w-20 " src="https://snovy5.com/cdn/shop/files/1000015704.png?v=1745060632"></img>
+
+    </Link>
+
+    {/* Right Icons */}
+    <div className="flex items-center space-x-4">
+      <button className="p-2" onClick={toggleSearch}>
+        <Search size={20} />
+      </button>
+
+      <button
+        className="p-2"
+        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      >
+        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+      </button>
+
+      <Link to="/wishlist" className="p-2">
+        <Heart size={20} />
+      </Link>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="p-2">
+            <User size={20} />
+          </button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-40 z-[99999]">
+          {isAuthenticated ? (
+            <>
+              <DropdownMenuItem className="text-xs opacity-70">
+                Hello, {user?.firstName}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/account">My Account</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/account/orders">My Orders</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout}>
+                <LogOut size={16} className="mr-2" /> Logout
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem asChild>
+                <Link to="/account">Sign In</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/account?register=true">Register</Link>
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  </div>
+
+  {/* Mobile Menu, Search Overlay — unchanged */}
+  {isMenuOpen && (
+    <div className="fixed inset-0 bg-background z-[9998] px-6 py-6">
+      <button className="p-2 mb-8" onClick={() => setIsMenuOpen(false)}>
+        <X size={26} />
+      </button>
+
+      <nav className="flex flex-col space-y-6 text-xl font-medium">
+        <Link className="block" to="/shop" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+        <Link className="block" to="/categories" onClick={() => setIsMenuOpen(false)}>Categories</Link>
+        <Link className="block" to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
+
+        <Link to="/cart" className="relative p-2">
+          <ShoppingCart size={20} />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              {cartCount}
+            </span>
+          )}
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/shop">Shop</Link>
-          <Link to="/categories">Categories</Link>
-          <Link to="/about">About</Link>
-          <Link to="/contact">Contact</Link>
-        </nav>
+        <Link className="block" to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+        <Link to="/wishlist" className="p-2">
+          <Heart size={20} />
+        </Link>
+      </nav>
+    </div>
+  )}
 
-        {/* Right Icons */}
-        <div className="flex items-center space-x-4">
-          <button className="p-2" onClick={toggleSearch}>
-            <Search size={20} />
-          </button>
-
-          <button
-            className="p-2"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-
-          <Link to="/wishlist" className="hidden sm:block p-2">
-            <Heart size={20} />
-          </Link>
-
-          {/* Account Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="p-2  sm:block">
-                <User size={20} />
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-40 z-[99999]">
-              {isAuthenticated ? (
-                <>
-                  <DropdownMenuItem className="text-xs opacity-70">
-                    Hello, {user?.firstName}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/account">My Account</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/account/orders">My Orders</Link>
-                  </DropdownMenuItem>
-                   
-                  
-                  <DropdownMenuSeparator />
-                 
-                  <DropdownMenuItem onClick={logout}>
-                    <LogOut size={16} className="mr-2" /> Logout
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/account">Sign In</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/account?register=true">Register</Link>
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Cart */}
-          <Link to="/cart" className="relative p-2">
-            <ShoppingCart size={20} />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-        </div>
+  {isSearchOpen && (
+    <div className="fixed inset-0 bg-background z-[99999]">
+      <div className="container-custom py-4 flex justify-between items-center">
+        <span className="font-medium">Search Products</span>
+        <button className="p-2" onClick={toggleSearch}>
+          <X size={26} />
+        </button>
       </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 bg-background z-[9998] px-6 py-6">
-          <button className="p-2 mb-8" onClick={() => setIsMenuOpen(false)}>
-            <X size={26} />
-          </button>
-
-          <nav className="flex flex-col space-y-6 text-xl font-medium">
-            <Link className="block" to="/shop" onClick={() => setIsMenuOpen(false)}>Shop</Link>
-            <Link className="block" to="/categories" onClick={() => setIsMenuOpen(false)}>Categories</Link>
-            <Link className="block" to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
-            <Link className="block" to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
-            <Link to="/wishlist" className=" sm:block p-2">
-            <Heart size={20} />
-          </Link>
-          </nav>
+      <div className="container-custom">
+        <div className="relative">
+          <Input
+            type="text"
+            autoFocus
+            placeholder="Search for products..."
+            className="py-6 px-4 text-lg border-b rounded-none focus-visible:ring-0"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         </div>
-      )}
+        <SearchResults onClose={toggleSearch} />
+      </div>
+    </div>
+  )}
 
-      {/* Search Overlay */}
-      {isSearchOpen && (
-        <div className="fixed inset-0 bg-background z-[99999]">
-          <div className="container-custom py-4 flex justify-between items-center">
-            <span className="font-medium">Search Products</span>
-            <button className="p-2" onClick={toggleSearch}>
-              <X size={26} />
-            </button>
-          </div>
+</header>
 
-          <div className="container-custom">
-            <div className="relative">
-              <Input
-                type="text"
-                autoFocus
-                placeholder="Search for products..."
-                className="py-6 px-4 text-lg border-b rounded-none focus-visible:ring-0"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
-            <SearchResults onClose={toggleSearch} />
-          </div>
-        </div>
-      )}
-    </header>
   );
 };
 

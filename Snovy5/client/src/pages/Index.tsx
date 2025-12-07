@@ -231,11 +231,11 @@ import { fetchProducts } from "../api/productApi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const heroImages = [
-  "https://img.freepik.com/premium-photo/display-t-sh…moon-sign-that-says-moon_974629-463546.jpg?w=1060",
-  "https://img.freepik.com/premium-photo/shirt-that-h…-shirt-that-says-t-shirt_1086760-81334.jpg?w=1060",
+  "https://static.vecteezy.com/system/resources/thumbnails/049/024/618/small_2x/free-new-colorful-t-shirts-mockup-with-copy-space-on-drak-color-background-free-photo.jpg",
+  "https://static.vecteezy.com/system/resources/thumbnails/049/024/658/small_2x/free-new-colorful-t-shirts-mockup-with-copy-space-on-drak-color-background-free-photo.jpg",
   "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1500",
-  "https://img.freepik.com/premium-photo/shirts-new-season-are-displayed-this-image_1213494-12327.jpg?w=1060",
-  "https://img.freepik.com/premium-photo/black-shirt-…hat-it-that-says-t-shirt_1086760-85066.jpg?w=1060",
+  "https://t3.ftcdn.net/jpg/06/25/23/08/360_F_625230848_kR0nFlnGG8N9uTLsgRLxK4e3vV0n2Olm.jpg",
+  "https://img.freepik.com/premium-photo/row-black-shirts-with-word-t-front_993259-11488.jpg",
 ];
 
 function HeroSlider() {
