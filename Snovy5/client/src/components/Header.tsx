@@ -371,6 +371,15 @@ const Header = () => {
         <Heart size={20} />
       </Link>
 
+      <Link to="/cart" className="relative p-2">
+          <ShoppingCart size={20} />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="p-2">
