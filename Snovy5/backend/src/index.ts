@@ -98,6 +98,7 @@ const allowedOrigins = [
   "https://snovy5.vercel.app",
   "http://localhost:5173",
   "http://localhost:8080",
+  "http://snovy5.com"
 ];
 
 app.use(
