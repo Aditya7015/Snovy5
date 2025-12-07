@@ -323,11 +323,7 @@ const Header = () => {
                     <Link to="/account/orders">My Orders</Link>
                   </DropdownMenuItem>
                    
-                  <DropdownMenuItem asChild>
-                      {user.email==="aman444@gmail.com"?(
-    <NavLink to="/admin">Admin Page</NavLink>
-  ) : null}
-                  </DropdownMenuItem>
+                  
                   <DropdownMenuSeparator />
                  
                   <DropdownMenuItem onClick={logout}>
