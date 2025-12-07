@@ -197,29 +197,37 @@ const About = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-primary text-white">
-          <div className="container-custom text-center">
-            <h2 className="text-3xl md:text-4xl font-serif mb-6">
-              Join the Snoovy Community
-            </h2>
-            <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
-              Ready to experience fashion that empowers and inspires? Discover
-              our thoughtfully curated collections and find pieces that resonate
-              with your unique style.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button variant="secondary" asChild>
-                <Link to="/shop">Shop The Latest</Link>
-              </Button>
-              <Button
-                className="bg-white/20 hover:bg-white/30 text-white"
-                asChild
-              >
-                <Link to="/contact">Ask a Question</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        {/* CTA Section */}
+<section className="py-20 bg-black text-white">
+  <div className="container-custom text-center">
+    <h2 className="text-3xl md:text-4xl font-serif mb-6">
+      Join the Snovy5 Community
+    </h2>
+
+    <p className="text-lg text-gray-300 mb-10 max-w-xl mx-auto">
+      Unlock exclusive drops, insider news, and streetwear built for bold individuality.
+    </p>
+
+    <div className="flex flex-wrap gap-4 justify-center">
+  <Button
+    className="bg-white text-black hover:bg-white/90 font-semibold px-8 py-3 rounded-md transition"
+    asChild
+  >
+    <Link to="/shop">Shop The Latest</Link>
+  </Button>
+
+  <Button
+    className="border border-gray-500 text-gray-300 hover:bg-gray-800 hover:text-white px-8 py-3 rounded-md"
+    variant="ghost"
+    asChild
+  >
+    <Link to="/contact">Ask a Question</Link>
+  </Button>
+</div>
+
+  </div>
+</section>
+
       </main>
 
       <Footer />

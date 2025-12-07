@@ -155,7 +155,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t mt-16 pt-8 text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center">
+        {/* <div className="border-t mt-16 pt-8 text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center">
           <p>&copy; {new Date().getFullYear()} Snovy5. All rights reserved.</p>
 
           <div className="mt-4 md:mt-0 flex gap-2">
@@ -175,7 +175,46 @@ const Footer = () => {
               PayP
             </div>
           </div>
-        </div>
+        </div> */}
+        {/* Bottom Bar */}
+{/* Bottom Bar */}
+<div className="border-t mt-16 pt-8 text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center gap-4">
+
+  <p>&copy; {new Date().getFullYear()} Snovy5. All rights reserved.</p>
+
+  <p className="text-muted-foreground font-medium">
+    Built by{" "}
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href="https://instagram.com/webuilt_u"
+      className="hover:text-primary transition"
+    >
+      Webuilt_U
+    </a>
+  </p>
+
+  {/* Payment Methods */}
+  <div className="flex gap-2">
+    <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
+      VISA
+    </div>
+    <div className="w-10 h-6 bg-red-500 rounded flex items-center justify-center text-white text-xs font-bold">
+      MC
+    </div>
+    <div className="w-10 h-6 bg-gray-800 rounded flex items-center justify-center text-white text-xs">
+      AmEx
+    </div>
+    <div className="w-10 h-6 bg-yellow-400 rounded flex items-center justify-center text-black text-xs font-bold">
+      GPay
+    </div>
+    <div className="w-10 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs font-bold">
+      PayP
+    </div>
+  </div>
+
+</div>
+
       </div>
     </footer>
   );
