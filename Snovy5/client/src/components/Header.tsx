@@ -251,7 +251,7 @@ const Header = () => {
     <header className="border-b sticky top-0 bg-background z-[9999]">
 
   {/* MOBILE HEADER (ONLY for screens < md) */}
-  <div className="container-custom flex items-center  justify-between py-5 md:hidden relative">
+  <div className="container-custom flex items-center  justify-between py-8 md:hidden relative">
 
     {/* Left Side (Menu or Back) */}
     <div className="flex items-center space-x-2">
@@ -329,7 +329,7 @@ const Header = () => {
   </div>
 
   {/* DESKTOP HEADER (md and above) */}
-  <div className="container-custom  hidden md:flex items-center justify-between">
+  <div className="container-custom py-1 hidden md:flex items-center justify-between">
 
     {/* Left Navigation */}
     <nav className="flex items-center space-x-8">
