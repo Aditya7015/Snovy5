@@ -229,6 +229,7 @@ import { Button } from "@/components/ui/button";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { fetchProducts } from "../api/productApi";
 import { motion, AnimatePresence } from "framer-motion";
+import HomeShimmer from "@/shimmereffects/homeshimmer";
 
 const heroImages = [
   "https://static.vecteezy.com/system/resources/thumbnails/049/024/618/small_2x/free-new-colorful-t-shirts-mockup-with-copy-space-on-drak-color-background-free-photo.jpg",
@@ -321,6 +322,11 @@ const HomePage = () => {
       .fromTo(hero.querySelector("h1"), { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, "-=0.5")
       .fromTo(hero.querySelector("p"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, "-=0.7");
   }, []);
+ 
+  console.log(products);
+  if(products.length ==0 ){
+    return <HomeShimmer></HomeShimmer>
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
