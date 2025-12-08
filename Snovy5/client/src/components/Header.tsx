@@ -305,6 +305,12 @@ const Header = () => {
               <DropdownMenuItem asChild>
                 <Link to="/account">My Account</Link>
               </DropdownMenuItem>
+              {user?.isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link to="/admin">Admin Panel</Link>
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem asChild>
                 <Link to="/account/orders">My Orders</Link>
               </DropdownMenuItem>
@@ -397,6 +403,12 @@ const Header = () => {
               <DropdownMenuItem asChild>
                 <Link to="/account">My Account</Link>
               </DropdownMenuItem>
+              {user?.isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link to="/admin">Admin Panel</Link>
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem asChild>
                 <Link to="/account/orders">My Orders</Link>
               </DropdownMenuItem>

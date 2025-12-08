@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { gsap } from "gsap";
 
@@ -122,4 +122,4 @@ const ProductCard = ({ product, featuredSize = false }: ProductCardProps) => {
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);
