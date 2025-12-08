@@ -10,16 +10,16 @@ export default function HomeShimmer() {
       </div>
 
       {/* HEADER */}
-      <div className="h-20 w-full bg-gray-200" />
+      {/* <div className="h-20 w-full bg-gray-200" /> */}
 
       {/* HERO SECTION */}
-      <div className="relative h-[80vh] w-full bg-gray-300">
+      {/* <div className="relative h-[80vh] w-full bg-gray-300">
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="w-3 h-3 rounded-full bg-gray-400" />
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* FEATURED COLLECTION SHIMMER */}
       <div className="container-custom py-16">

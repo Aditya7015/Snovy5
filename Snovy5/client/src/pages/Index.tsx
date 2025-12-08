@@ -325,7 +325,12 @@ const HomePage = () => {
  
   console.log(products);
   if(products.length ==0 ){
-    return <HomeShimmer></HomeShimmer>
+    return <div>
+      <Header />
+      <HeroSlider />
+      <HomeShimmer></HomeShimmer>
+    </div> 
+    
   }
 
   return (
