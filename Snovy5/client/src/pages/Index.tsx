@@ -329,6 +329,7 @@ const HomePage = () => {
       <Header />
       <HeroSlider />
       <HomeShimmer></HomeShimmer>
+      <Footer />
     </div> 
     
   }

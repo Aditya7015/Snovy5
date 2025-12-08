@@ -52,7 +52,7 @@ export default function HomeShimmer() {
       </div>
 
       {/* FOOTER */}
-      <div className="bg-gray-300 h-48 w-full" />
+      {/* <div className="bg-gray-300 h-48 w-full" /> */}
     </div>
   );
 }

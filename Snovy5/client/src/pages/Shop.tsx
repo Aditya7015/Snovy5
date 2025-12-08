@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { fetchProducts } from "@/api/productApi";
 import { Slider } from "@/components/ui/slider";
+import HomeShimmer from "@/shimmereffects/homeshimmer";
 import {
   Select,
   SelectContent,
@@ -336,9 +337,10 @@ const Shop = () => {
 
                 {/* No Products */}
                 {filteredProducts.length === 0 && (
-                  <div className="text-center py-16 text-lg text-muted-foreground">
-                    No results found. Try removing filters.
-                  </div>
+                  // <div className="text-center py-16 text-lg text-muted-foreground">
+                  //   No results found. Try removing filters.
+                  // </div>
+                  <HomeShimmer></HomeShimmer>
                 )}
 
               </div>
