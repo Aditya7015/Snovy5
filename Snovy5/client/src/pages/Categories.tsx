@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Tags } from "lucide-react";
 import { fetchCategoriesWithOneProduct } from "@/api/productApi";
+import { p } from "node_modules/framer-motion/dist/types.d-BJcRxCew";
 
 
 interface Category {
