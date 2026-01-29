@@ -10,7 +10,7 @@ const API_URL =
   import.meta.env.VITE_API_URL ||
   (window.location.hostname === "localhost"
     ? "http://localhost:5000"
-    : "https://snovy5-2.onrender.com");
+    : "https://snovy5-backend.onrender.com");
 
 
 // Same token checker used everywhere
