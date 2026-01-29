@@ -156,7 +156,7 @@ import AccountOrders from "./pages/AccountOrders";
 const queryClient = new QueryClient();
 
 /* 🔴 MAINTENANCE SWITCH */
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
